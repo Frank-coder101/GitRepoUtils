@@ -3,3 +3,57 @@ Understand on the goals and requirements in `/prompts/CLI User Simulator (CUS) R
 Always follow the process in `/prompts/IterativeDevelopment.md`, unless the user interrupts you, do not prompt the user. If you have a list of suggestions or choices, estimate what the answer would be before prompting the user. Log that assumption in `/Logs/Assumptions.md` and then proceed with the estimated answer.
 
 Only stop when you have encountered the same error 10 times in a row, or have no more requirements to implement, and not more steps in the iteration to follow
+
+## CRITICAL DEVELOPMENT METHODOLOGY - POST-CONFIRMATION CLEANUP PROTOCOL
+
+**User Insight (Permanent Memory)**: When debugging complex technical issues, it's appropriate and valuable to create multiple experimental versions, test scripts, and code variants to find working solutions faster. However, once the user CONFIRMS a solution works, there is a critical cleanup step that must always be performed:
+
+### The Protocol:
+1. **During Debug Phase**: Create variants freely (run_*.bat, CUS_*.py, experimental configs, etc.)
+2. **After User Confirmation**: Immediately implement cleanup:
+   - Create `CodeArchive/` or `archive/` folder structure
+   - Move all experimental/failed approaches to archive
+   - Keep ONLY the confirmed working solution in production area
+   - Document briefly what worked and why
+   - Remove technical debt and confusing artifacts
+
+### Why This Matters:
+- **For Current User**: Clean, maintainable production environment
+- **For Future Users**: Inherit focused codebase, not debugging artifacts  
+- **For Development Quality**: Reduces confusion and maintenance burden
+- **For AI Consistency**: Prevents re-creation of already-solved problems
+
+### Implementation:
+```
+CodeArchive/
+├── failed_approaches/
+├── experimental_versions/  
+├── legacy_code/
+└── README.md (what worked, what didn't, why)
+```
+
+### Memory Integration:
+This principle applies universally to ALL users and ALL technical debugging scenarios, not just this project. It should be applied automatically after any user confirmation of a working solution.
+
+**Source**: User feedback on 2025-07-07 during CUS Alt+Tab vs Full Mode cleanup discussion. This insight represents evolution of debugging best practices.
+
+## ESSENTIAL SETUP & TEST WORKFLOW
+
+**Quick Reference** (Full details in `SETUP_COMMANDS.md`):
+
+### Setup/Verification Sequence:
+1. **Install deps**: `python -m pip install -r requirements.txt`
+2. **Test syntax**: `python -m py_compile CUS.py` 
+3. **Test imports**: `python -c "import pynput, pyautogui, pytesseract; print('✅ OK')"`
+4. **Run tests**: `python -m pytest test_CUS.py -v` (if test files exist)
+5. **Full test**: `python CUS.py` (requires manual interaction)
+
+### Automated Setup:
+- Use `setup_and_run_complete.bat` for full automated setup
+- Use `SETUP_COMMANDS.md` for detailed manual steps
+
+### Directory Structure Verification:
+- Must have: `Logs/`, `NewErrors/`, `simulation_dictionary.txt`
+- Check with: `setup_test_environment.bat` (in CodeArchive if needed)
+
+**IMPORTANT**: Always verify dependencies and directory structure before running full CUS tests.

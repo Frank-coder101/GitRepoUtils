@@ -46,3 +46,33 @@ This file logs assumptions made during the development process based on the `.co
     - Assumption: User needs easy ways to launch and debug CUS from within VS Code.
     - Action: Created tasks.json and launch.json configurations for running CUS in safe mode, production mode, and testing.
     - Result: Available VS Code tasks: "Run CUS Safe Mode", "Run CUS Production Mode", "Test CUS Launch", "Run Safe Unit Tests"
+
+11. **Setup Method Clarification**:
+    - Assumption: User prefers BAT file setup over Python virtual environments based on `.copilot` directives.
+    - Action: Corrected `setup_and_run.bat` to use the proper project path and full requirements.txt instead of limited package installation.
+    - Result: Fixed BAT file now properly sets up all directories, installs all required packages, creates sample files, and validates syntax - no VENV needed as per `.copilot` requirements.
+    - Verification: Successfully ran setup_and_run.bat with no errors, all dependencies installed correctly.
+
+12. **Baseline Test Results (July 7, 2025)**:
+    - Assumption: Need to establish baseline behavior before upgrade work begins.
+    - Action: Ran full CUS.py test with ExtP to reproduce known false negative scenario.
+    - Result: Successfully reproduced baseline behavior with two key issues identified:
+      
+    **Issue 1 - False Negative Confirmed**:
+    - ExtP shows menu: "Select an option:" with "1. Configure trading system"
+    - CUS correctly detects trigger and sends "1"
+    - ExtP responds with "Trading system is already configured" (FALSE NEGATIVE)
+    - Should show configuration interface instead
+    
+    **Issue 2 - Monitoring Loop Behavior**:
+    - CUS detected "Screen content changed" multiple times but took no action initially
+    - Only acted when explicit trigger "Select an option:" was detected
+    - This suggests the screen change detection is working but trigger matching may need improvement
+    
+    **Baseline Established**:
+    - No runtime errors or crashes
+    - All imports successful
+    - OCR and screen capture working correctly
+    - Keyboard simulation working correctly
+    - The false negative behavior is consistent and reproducible
+    - Ready for upgrade work to begin with TestCaseGenerator enhancement and RADAR methodology implementation

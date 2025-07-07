@@ -1,5 +1,4 @@
 print("=== CUS STARTING - IMPORT PHASE ===", flush=True)
-print("*** CORRECTED CUS.PY WITH ALT+TAB FOCUS - NO WATCHDOG ***", flush=True)
 import os
 print("os imported", flush=True)
 import time
@@ -11,16 +10,11 @@ print("subprocess imported", flush=True)
 import random
 print("random imported", flush=True)
 
-# Import required Windows API and system modules
+# Import required system modules (pywin32 removed - Alt+Tab mode only)
 try:
     import psutil
     import pygetwindow as gw
     import pyautogui
-    import win32gui
-    import win32con
-    import win32process
-    import win32api
-    import win32clipboard
     import re
     import logging
     from PIL import ImageGrab
@@ -28,7 +22,7 @@ try:
     import queue
     import sys
     import json
-    print("System and Windows API modules imported successfully", flush=True)
+    print("System modules imported successfully", flush=True)
 except Exception as e:
     print(f"System modules import failed: {e}", flush=True)
     exit(1)
@@ -53,9 +47,25 @@ except Exception as e:
 try:
     import pytesseract
     from PIL import Image, ImageGrab
-    # Set the path to the Tesseract executable
-    pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
-    print("OCR libraries imported successfully", flush=True)
+    
+    # Configure pytesseract path - try common Windows locations
+    tesseract_paths = [
+        r"C:\Program Files\Tesseract-OCR\tesseract.exe",
+        r"C:\Program Files (x86)\Tesseract-OCR\tesseract.exe",
+        r"C:\Users\gibea\AppData\Local\Microsoft\WinGet\Packages\UB-Mannheim.TesseractOCR_Microsoft.Winget.Source_8wekyb3d8bbwe\tesseract.exe"
+    ]
+    
+    tesseract_found = False
+    for path in tesseract_paths:
+        if os.path.exists(path):
+            pytesseract.pytesseract.tesseract_cmd = path
+            tesseract_found = True
+            print(f"OCR libraries imported successfully - Tesseract found at: {path}", flush=True)
+            break
+    
+    if not tesseract_found:
+        print("OCR libraries imported - Tesseract not found in common locations, OCR may fail", flush=True)
+    
 except Exception as e:
     print(f"OCR libraries import failed: {e}", flush=True)
     exit(1)
@@ -74,7 +84,6 @@ print("=== INITIALIZING CONFIGURATION ===", flush=True)
 
 # Production Configuration
 SAFE_MODE = False  # Production mode - real keyboard simulation
-ENABLE_ERROR_DETECTION = True  # Enable smart error detection
 
 # Configuration
 POLL_INTERVAL = 3  # Screen capture interval in seconds
@@ -155,20 +164,6 @@ last_action_time = 0
 last_action_type = ""
 action_repeat_count = 0
 
-# Global variables for target window tracking
-target_window = None
-target_window_title = ""
-target_window_hwnd = None
-target_window_process_id = None
-
-# Global flag for Alt+Tab focus mode
-use_alt_tab_focus = False
-
-# Global variables for target window tracking
-target_window = None
-target_window_title = ""
-target_window_hwnd = None
-
 def process_screen_content(simulation_dictionary, current_text, previous_text):
     """Process screen content for triggers"""
     global last_action_time, last_action_type, action_repeat_count
@@ -188,85 +183,7 @@ def process_screen_content(simulation_dictionary, current_text, previous_text):
     else:
         text_to_process = current_text
     
-    # SMART ERROR DETECTION: Check if ExtP is showing a menu/input prompt first
-    # Menu prompts are typically at the bottom of the screen text
-    menu_indicators = [
-        "enter your choice:",
-        "select an option:",
-        "press enter to",
-        "type y/n:",
-        "continue (y/n)",
-        "press any key",
-        "choose:",
-        "select:",
-        "[y/n]",
-        "(y/n)",
-        "enter to continue",
-        "press enter",
-        "menu:",
-        "options:",
-        "1.",  # Numbered menu items
-        "2.", 
-        "3.",
-        ">>>",  # Command prompt
-        ">>",
-        ">",
-        "waiting for input",
-        "please select",
-        "make your choice"
-    ]
-    
-    # Check the last 500 characters (bottom of screen) for menu indicators
-    text_bottom = text_to_process[-500:].lower()
-    is_showing_menu = any(indicator in text_bottom for indicator in menu_indicators)
-    
-    if is_showing_menu:
-        safe_print("ExtP appears to be showing a menu or waiting for input - skipping error detection")
-    else:
-        # Only check for errors if NOT showing a menu
-        if ENABLE_ERROR_DETECTION:
-            # Look for patterns that indicate REAL errors, not menu text
-            actual_error_patterns = [
-                "error:",
-                "exception:",
-                "failed to",
-                "could not",
-                "timeout occurred",
-                "critical error",
-                "fatal error",
-                "runtime error",
-                "traceback (most recent call last)",
-                "stack trace",
-                "connection failed",
-                "file not found",
-                "access denied",
-                "permission denied",
-                "out of memory",
-                "disk full",
-                "network error",
-                "database error",
-                "syntax error",
-                "import error",
-                "module not found",
-                "assertion error",
-                "value error",
-                "type error",
-                "key error",
-                "index error"
-            ]
-            
-            text_lower = text_to_process.lower()
-            for error_pattern in actual_error_patterns:
-                if error_pattern in text_lower:
-                    # Double-check this isn't part of a menu option or help text
-                    error_context = get_error_context(text_lower, error_pattern)
-                    if is_real_error(error_context):
-                        safe_print(f"Actual error detected: {error_pattern}")
-                        safe_print(f"Error context: {error_context}")
-                        log_error_event(error_pattern, text_to_process)
-                        return
-    
-    # Check for simulation triggers
+    # PRIORITY 1: Check for simulation triggers (ExtP waiting for input) FIRST
     for trigger, action in simulation_dictionary.items():
         if trigger.lower() in text_to_process.lower():
             safe_print(f"Trigger detected on screen: {trigger}")
@@ -289,78 +206,14 @@ def process_screen_content(simulation_dictionary, current_text, previous_text):
             perform_action(action)
             log_simulation_event(trigger, action)
             return  # Only process first matching trigger
-
-def get_error_context(text, error_pattern):
-    """Get context around an error pattern to help determine if it's a real error"""
-    try:
-        error_index = text.find(error_pattern)
-        if error_index == -1:
-            return ""
-        
-        # Get 100 characters before and after the error
-        start = max(0, error_index - 100)
-        end = min(len(text), error_index + len(error_pattern) + 100)
-        context = text[start:end]
-        return context.strip()
-    except:
-        return ""
-
-def is_real_error(error_context):
-    """Determine if an error context indicates a real error vs menu/help text"""
-    if not error_context:
-        return True  # If we can't get context, assume it's real
     
-    # These phrases suggest it's NOT a real error, but menu/help text
-    false_positive_indicators = [
-        "if you see an error",
-        "in case of error",
-        "error handling",
-        "error codes:",
-        "error messages:",
-        "troubleshooting errors",
-        "common errors:",
-        "error description",
-        "error type:",
-        "error log",
-        "error options",
-        "error menu",
-        "help with errors",
-        "error information",
-        "error details",
-        "select error",
-        "choose error",
-        "error category"
-    ]
-    
-    error_lower = error_context.lower()
-    for indicator in false_positive_indicators:
-        if indicator in error_lower:
-            return False  # This is likely menu/help text, not a real error
-    
-    # These patterns suggest it IS a real error
-    real_error_indicators = [
-        "occurred",
-        "failed",
-        "cannot",
-        "unable to",
-        "not found",
-        "denied",
-        "timeout",
-        "crashed",
-        "terminated",
-        "aborted",
-        "interrupted",
-        "corrupted",
-        "invalid",
-        "unexpected"
-    ]
-    
-    for indicator in real_error_indicators:
-        if indicator in error_lower:
-            return True  # This looks like a real error
-    
-    # Default to treating it as a real error if unsure
-    return True
+    # PRIORITY 2: Only check for errors if NO triggers found (ExtP not waiting for input)
+    errors = ["error", "exception", "failed", "timeout", "critical"]
+    for error in errors:
+        if error.lower() in text_to_process.lower():
+            safe_print(f"Error detected on screen: {error}")
+            log_error_event(error, text_to_process)
+            return
 
 def generate_action_failure_prompt(trigger, action, screen_content):
     """Generate defect prompt for action failures"""
@@ -483,27 +336,18 @@ def perform_action(action):
     # Add a small delay before performing action to ensure target window is ready
     time.sleep(0.5)
     
-    # Focus on the external program window with multiple attempts
+    # Focus on the external program window using Alt+Tab
     focus_success = False
-    for attempt in range(5):  # Try 5 times
-        safe_print(f"Focus attempt {attempt + 1}/5...")
-        
-        # Choose focus method based on mode
-        if use_alt_tab_focus:
-            safe_print("Using Alt+Tab to switch to ExtP...")
-            focus_result = focus_using_alt_tab()
-        elif target_window_hwnd:
-            safe_print("Using stored window handle to focus ExtP...")
-            focus_result = focus_target_window()
-        else:
-            safe_print("Using pattern matching to find and focus ExtP...")
-            focus_result = focus_external_program_window()
+    for attempt in range(3):  # Reduced attempts since Alt+Tab is simpler
+        safe_print(f"Focus attempt {attempt + 1}/3...")
+        safe_print("Using Alt+Tab to switch to ExtP...")
+        focus_result = focus_using_alt_tab()
             
         if focus_result:
             focus_success = True
             safe_print(f"Focus successful on attempt {attempt + 1}")
             break
-        time.sleep(2)  # Wait longer between retry attempts
+        time.sleep(1)  # Brief wait between retry attempts
     
     if not focus_success:
         safe_print("WARNING: Could not focus external program window!")
@@ -591,19 +435,19 @@ def perform_action(action):
     time.sleep(1)  # Give time for the action to take effect
 
 def send_key_multiple_methods(key, key_name):
-    """Send a key using multiple methods for maximum reliability"""
-    safe_print(f"Sending {key_name} key using multiple methods...")
+    """Send a key using fallback methods for maximum reliability"""
+    safe_print(f"Sending {key_name} key using fallback methods...")
     
-    # Method 1: pynput keyboard
+    # Method 1: pynput keyboard - PRIMARY
     try:
         keyboard.press(key)
         keyboard.release(key)
-        safe_print(f"Method 1 (pynput): {key_name} sent")
-        time.sleep(0.2)
+        safe_print(f"✅ Method 1 (pynput): {key_name} sent successfully")
+        return True  # Success - don't try other methods
     except Exception as e:
-        safe_print(f"Method 1 (pynput) failed: {e}")
+        safe_print(f"❌ Method 1 (pynput) failed: {e}")
     
-    # Method 2: pyautogui
+    # Method 2: pyautogui - FALLBACK 1
     try:
         if key == Key.enter:
             pyautogui.press('enter')
@@ -611,15 +455,14 @@ def send_key_multiple_methods(key, key_name):
             pyautogui.press('space')
         elif key == Key.esc:
             pyautogui.press('esc')
-        safe_print(f"Method 2 (pyautogui): {key_name} sent")
-        time.sleep(0.2)
+        safe_print(f"✅ Method 2 (pyautogui): {key_name} sent successfully")
+        return True  # Success - don't try Windows API method
     except Exception as e:
-        safe_print(f"Method 2 (pyautogui) failed: {e}")
+        safe_print(f"❌ Method 2 (pyautogui) failed: {e}")
     
-    # Method 3: Windows-specific using ctypes (for Windows)
+    # Method 3: Windows API - FALLBACK 2
     try:
         import ctypes
-        from ctypes import wintypes
         
         # Define Windows key codes
         if key == Key.enter:
@@ -636,34 +479,38 @@ def send_key_multiple_methods(key, key_name):
             ctypes.windll.user32.keybd_event(vk_code, 0, 0, 0)  # Key down
             time.sleep(0.05)
             ctypes.windll.user32.keybd_event(vk_code, 0, 2, 0)  # Key up
-            safe_print(f"Method 3 (Windows API): {key_name} sent")
-            time.sleep(0.2)
+            safe_print(f"✅ Method 3 (Windows API): {key_name} sent successfully")
+            return True  # Success
     except Exception as e:
-        safe_print(f"Method 3 (Windows API) failed: {e}")
+        safe_print(f"❌ Method 3 (Windows API) failed: {e}")
+    
+    # All methods failed
+    safe_print(f"❌ ALL KEY INPUT METHODS FAILED for {key_name}")
+    return False
 
 def send_text_multiple_methods(text):
-    """Send text using multiple methods for maximum reliability"""
-    safe_print(f"Sending text '{text}' using multiple methods...")
+    """Send text using fallback methods for maximum reliability"""
+    safe_print(f"Sending text '{text}' using fallback methods...")
     
-    # Method 1: pynput keyboard (character by character)
+    # Method 1: pynput keyboard (character by character) - PRIMARY
     try:
         for char in text:
             keyboard.type(char)
-            time.sleep(0.1)  # Small delay between characters
-        safe_print(f"Method 1 (pynput): Text '{text}' sent")
-        time.sleep(0.3)
+            time.sleep(0.05)  # Small delay between characters
+        safe_print(f"✅ Method 1 (pynput): Text '{text}' sent successfully")
+        return True  # Success - don't try other methods
     except Exception as e:
-        safe_print(f"Method 1 (pynput) failed: {e}")
+        safe_print(f"❌ Method 1 (pynput) failed: {e}")
     
-    # Method 2: pyautogui typewrite
+    # Method 2: pyautogui typewrite - FALLBACK 1
     try:
-        pyautogui.typewrite(text, interval=0.1)
-        safe_print(f"Method 2 (pyautogui): Text '{text}' sent")
-        time.sleep(0.3)
+        pyautogui.typewrite(text, interval=0.05)
+        safe_print(f"✅ Method 2 (pyautogui): Text '{text}' sent successfully")
+        return True  # Success - don't try clipboard method
     except Exception as e:
-        safe_print(f"Method 2 (pyautogui) failed: {e}")
+        safe_print(f"❌ Method 2 (pyautogui) failed: {e}")
     
-    # Method 3: Windows clipboard + Ctrl+V
+    # Method 3: Windows clipboard + Ctrl+V - FALLBACK 2
     try:
         import pyperclip
         import ctypes
@@ -679,10 +526,14 @@ def send_text_multiple_methods(text):
         ctypes.windll.user32.keybd_event(0x56, 0, 2, 0)  # V up
         ctypes.windll.user32.keybd_event(0x11, 0, 2, 0)  # Ctrl up
         
-        safe_print(f"Method 3 (Clipboard): Text '{text}' sent")
-        time.sleep(0.3)
+        safe_print(f"✅ Method 3 (Clipboard): Text '{text}' sent successfully")
+        return True  # Success
     except Exception as e:
-        safe_print(f"Method 3 (Clipboard) failed: {e}")
+        safe_print(f"❌ Method 3 (Clipboard) failed: {e}")
+    
+    # All methods failed
+    safe_print(f"❌ ALL TEXT INPUT METHODS FAILED for '{text}'")
+    return False
 
 def launch_external_program():
     """Launch the external program - COMMENTED OUT FOR DEBUGGING"""
@@ -863,196 +714,7 @@ def detect_ocr_mismatch(expected_text, actual_text, context=""):
             except Exception as e:
                 safe_print(f"Error generating OCR mismatch prompt: {e}")
 
-def focus_external_program_window():
-    """Focus on the external program window before performing actions"""
-    try:
-        # Try to find window by title patterns (in order of preference)
-        window_patterns = [
-            "DeFi Huddle Trading System",
-            "defi huddle",
-            "trading system",
-            "python.exe",
-            "cmd.exe",
-            "Command Prompt", 
-            "Windows PowerShell",
-            "PowerShell",
-            "Terminal"
-        ]
-        
-        safe_print("Attempting to focus external program window...")
-        
-        # Get all windows and log them for debugging
-        all_windows = gw.getAllWindows()
-        safe_print(f"Found {len(all_windows)} total windows")
-        
-        # Log visible windows for debugging
-        visible_windows = [w for w in all_windows if w.visible and w.title.strip()]
-        safe_print(f"Visible windows with titles ({len(visible_windows)}):")
-        for i, window in enumerate(visible_windows[:15]):  # Show first 15
-            safe_print(f"  {i+1}. '{window.title}'")
-        
-        # Try to find matching window using exact and partial matches
-        best_match = None
-        match_score = 0
-        
-        for pattern in window_patterns:
-            safe_print(f"Searching for pattern: '{pattern}'")
-            
-            # Try exact match first
-            for window in all_windows:
-                if window.visible and window.title.strip():
-                    title_lower = window.title.lower()
-                    pattern_lower = pattern.lower()
-                    
-                    # Exact match (highest priority)
-                    if title_lower == pattern_lower and match_score < 3:
-                        best_match = window
-                        match_score = 3
-                        safe_print(f"Exact match found: '{window.title}'")
-                        break
-                    
-                    # Contains match
-                    elif pattern_lower in title_lower and match_score < 2:
-                        best_match = window
-                        match_score = 2
-                        safe_print(f"Contains match found: '{window.title}' contains '{pattern}'")
-                    
-                    # Partial word match
-                    elif any(word in title_lower for word in pattern_lower.split()) and match_score < 1:
-                        best_match = window
-                        match_score = 1
-                        safe_print(f"Partial match found: '{window.title}' matches part of '{pattern}'")
-            
-            if best_match and match_score >= 2:  # Stop at good matches
-                break
-        
-        # Try to activate the best match
-        if best_match:
-            try:
-                safe_print(f"Attempting to activate best match: '{best_match.title}'")
-                
-                # Multiple activation attempts
-                for attempt in range(3):
-                    try:
-                        best_match.activate()
-                        time.sleep(0.5)
-                        
-                        # Verify activation by checking if it's the foreground window
-                        import ctypes
-                        foreground_hwnd = ctypes.windll.user32.GetForegroundWindow()
-                        if hasattr(best_match, '_hWnd') and best_match._hWnd == foreground_hwnd:
-                            safe_print(f"Successfully activated: '{best_match.title}' (attempt {attempt + 1})")
-                            return True
-                        else:
-                            safe_print(f"Activation attempt {attempt + 1} may have failed, trying again...")
-                            
-                    except Exception as e:
-                        safe_print(f"Activation attempt {attempt + 1} failed: {e}")
-                        time.sleep(0.5)
-                
-                # Alternative activation using Windows API
-                safe_print("Trying Windows API activation...")
-                try:
-                    import ctypes
-                    from ctypes import wintypes
-                    
-                    if hasattr(best_match, '_hWnd'):
-                        hwnd = best_match._hWnd
-                        # Bring window to front
-                        ctypes.windll.user32.SetForegroundWindow(hwnd)
-                        ctypes.windll.user32.ShowWindow(hwnd, 9)  # SW_RESTORE
-                        ctypes.windll.user32.SetActiveWindow(hwnd)
-                        time.sleep(0.5)
-                        safe_print(f"Windows API activation attempted for: '{best_match.title}'")
-                        return True
-                        
-                except Exception as e:
-                    safe_print(f"Windows API activation failed: {e}")
-                
-            except Exception as e:
-                safe_print(f"Could not activate window '{best_match.title}': {e}")
-        
-        # If no specific window found, try clicking approach
-        safe_print("No suitable window found. Using click-to-focus approach.")
-        try:
-            # Click on center of screen to ensure some window is focused
-            screen_width, screen_height = pyautogui.size()
-            center_x, center_y = screen_width // 2, screen_height // 2
-            safe_print(f"Clicking at screen center: ({center_x}, {center_y})")
-            pyautogui.click(center_x, center_y)
-            time.sleep(0.5)
-            
-            # Try Alt+Tab to cycle through windows
-            safe_print("Attempting Alt+Tab to cycle to target window...")
-            pyautogui.hotkey('alt', 'tab')
-            time.sleep(1)
-            
-            return True
-        except Exception as e:
-            safe_print(f"Click-to-focus failed: {e}")
-        
-        return False
-        
-    except Exception as e:
-        safe_print(f"Error in window focusing: {e}")
-        import traceback
-        safe_print(f"Focus error traceback: {traceback.format_exc()}")
-        return False
 
-def list_available_windows():
-    """List all available windows for debugging"""
-    try:
-        all_windows = gw.getAllWindows()
-        safe_print(f"Found {len(all_windows)} windows:")
-        for i, window in enumerate(all_windows[:10]):  # Show first 10
-            if window.visible and window.title.strip():
-                safe_print(f"  {i+1}. '{window.title}' (visible: {window.visible})")
-    except Exception as e:
-        safe_print(f"Error listing windows: {e}")
-
-def get_foreground_window_info():
-    """Get detailed information about the currently focused window."""
-    try:
-        # Get the foreground window handle
-        hwnd = win32gui.GetForegroundWindow()
-        if not hwnd:
-            return None
-        
-        # Get window title
-        title = win32gui.GetWindowText(hwnd)
-        
-        # Get process ID
-        _, process_id = win32process.GetWindowThreadProcessId(hwnd)
-        
-        # Get process name
-        process_name = ""
-        try:
-            process = psutil.Process(process_id)
-            process_name = process.name()
-        except (psutil.NoSuchProcess, psutil.AccessDenied):
-            pass
-        
-        # Get window class name
-        class_name = win32gui.GetClassName(hwnd)
-        
-        # Get window rect
-        rect = win32gui.GetWindowRect(hwnd)
-        
-        return {
-            'hwnd': hwnd,
-            'title': title,
-            'process_id': process_id,
-            'process_name': process_name,
-            'class_name': class_name,
-            'rect': rect,
-            'x': rect[0],
-            'y': rect[1],
-            'width': rect[2] - rect[0],
-            'height': rect[3] - rect[1]
-        }
-    except Exception as e:
-        safe_print(f"Error getting foreground window info: {str(e)}")
-        return None
 
 def prompt_user_for_focus_and_switch():
     """Simple focus workflow: user focuses ExtP, confirms in CUS, then Alt+Tab back"""
@@ -1100,48 +762,7 @@ def focus_using_alt_tab():
         safe_print(f"Error executing Alt+Tab: {e}")
         return False
 
-def focus_target_window():
-    """Focus the target window using the stored window handle."""
-    global target_window_hwnd, target_window_title
-    
-    if not target_window_hwnd:
-        safe_print("No target window handle stored")
-        return False
-    
-    try:
-        # Verify the window still exists
-        if not win32gui.IsWindow(target_window_hwnd):
-            safe_print(f"Target window handle {target_window_hwnd} is no longer valid")
-            return False
-        
-        # Check if window is visible
-        if not win32gui.IsWindowVisible(target_window_hwnd):
-            safe_print(f"Target window {target_window_title} is not visible")
-            # Try to show it
-            win32gui.ShowWindow(target_window_hwnd, win32con.SW_SHOW)
-        
-        # Restore if minimized
-        if win32gui.IsIconic(target_window_hwnd):
-            win32gui.ShowWindow(target_window_hwnd, win32con.SW_RESTORE)
-        
-        # Bring to foreground
-        win32gui.SetForegroundWindow(target_window_hwnd)
-        
-        # Give it a moment to process
-        time.sleep(0.1)
-        
-        # Verify it's now the foreground window
-        current_foreground = win32gui.GetForegroundWindow()
-        if current_foreground == target_window_hwnd:
-            safe_print(f"Successfully focused target window: {target_window_title}")
-            return True
-        else:
-            safe_print(f"Focus attempt may have failed. Current foreground: {win32gui.GetWindowText(current_foreground)}")
-            return False
-            
-    except Exception as e:
-        safe_print(f"Error focusing target window: {str(e)}")
-        return False
+
 
 def run_manual_trigger_mode(simulation_dictionary):
     """Run manual trigger mode where user can test actions manually"""
@@ -1212,10 +833,6 @@ def main():
         safe_print("✓ Sleep completed")
         
         safe_print("Using screen capture + OCR for monitoring")
-        if ENABLE_ERROR_DETECTION:
-            safe_print("Smart error detection: ENABLED - will detect real errors, ignore menu text")
-        else:
-            safe_print("Error detection: DISABLED")
         
         # Create required directories
         safe_print("Creating directories...")
@@ -1271,9 +888,6 @@ def main():
         setup_success = prompt_user_for_focus_and_switch()
         
         if setup_success:
-            # Set a flag to use Alt+Tab for focusing
-            global use_alt_tab_focus
-            use_alt_tab_focus = True
             safe_print("Simple Alt+Tab focus setup complete.")
             
             # IMPORTANT: Give user a moment to see the confirmation while ExtP is focused
@@ -1327,27 +941,15 @@ def main():
                     last_dict_reload_time = current_time
                     safe_print(f"Dictionary reloaded with {len(simulation_dictionary)} rules")
                 
-                # Check for error folder - only pause if NEW errors are detected
-                # Skip error folder monitoring if error detection is disabled
-                if ENABLE_ERROR_DETECTION:
-                    error_files = []
-                    if os.path.exists(NEW_ERRORS_PATH):
-                        error_files = os.listdir(NEW_ERRORS_PATH)
-                    
-                    # Track error files to avoid repeated pausing
-                    if not hasattr(main, 'known_error_files'):
-                        main.known_error_files = set()
-                    
-                    new_error_files = set(error_files) - main.known_error_files
-                    
-                    if new_error_files:
-                        safe_print(f"[{datetime.now().strftime('%H:%M:%S')}] {len(new_error_files)} new error files detected")
-                        for error_file in new_error_files:
-                            safe_print(f"  - {error_file}")
-                        main.known_error_files.update(new_error_files)
-                        # Only pause for truly new errors, not old ones
-                        safe_print("Pausing for 5 seconds for new errors...")
-                        time.sleep(5)
+                # Check for error folder - if errors exist, pause briefly and continue
+                if os.path.exists(NEW_ERRORS_PATH) and os.listdir(NEW_ERRORS_PATH):
+                    safe_print(f"[{datetime.now().strftime('%H:%M:%S')}] NewErrorsPath contains errors. Pausing for 10 seconds...")
+                    time.sleep(10)
+                    # Check again after pause
+                    if os.path.exists(NEW_ERRORS_PATH) and os.listdir(NEW_ERRORS_PATH):
+                        safe_print("Errors still present. Continuing monitoring anyway.")
+                    else:
+                        safe_print("Errors cleared. Resuming normal operations.")
                 
                 # Capture and process screen
                 previous_text = capture_and_process_screen(simulation_dictionary, previous_text)
@@ -1401,8 +1003,6 @@ def main():
 if __name__ == "__main__":
     print("=== CUS PYTHON SCRIPT STARTING ===", flush=True)
     print("[CUS] Script is being executed directly", flush=True)
-    print("[CUS] *** RUNNING THE CORRECTED CUS.PY WITH ALT+TAB FOCUS ***", flush=True)
-    print("[CUS] *** NO AUTO-RELOAD THREAD - FOCUS WORKFLOW ENABLED ***", flush=True)
     
     try:
         print("[CUS] About to call main()", flush=True)

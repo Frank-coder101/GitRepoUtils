@@ -2,3 +2,39 @@
 __pycache__/
 *.pyc
 .vscode/
+
+# Runtime Screenshots and Images
+**/Screenshots/*.png
+**/screenshot/*.png
+**/ref/*.png
+# Keep template images
+!**/templates/*.png
+
+# Runtime Log Files (but NOT documentation files)
+**/CUSEvents/CUS_*.txt
+**/CUSErrors/CUS_*.txt
+**/NewErrors/CUS_*.txt
+**/detection_log.txt
+**/debug*.txt
+**/*output.log
+**/*results.log
+**/*summary.log
+**/*test*.log
+
+# Specifically preserve important .md files
+!**/Assumptions.md
+!**/*.md
+
+# Cache and Temporary Directories
+**/.pytest_cache/
+**/.copilot/
+
+# Generated Metadata (can be regenerated)
+**/prompt_metadata.json
+**/extp_metadata.json
+
+# OS/Editor files
+**/.DS_Store
+**/Thumbs.db
+**/*.tmp
+**/*.temp

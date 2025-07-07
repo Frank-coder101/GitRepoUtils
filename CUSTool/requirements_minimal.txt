@@ -1,0 +1,20 @@
+# CUS Requirements - Alt+Tab Mode (Minimal Dependencies)
+# Core automation libraries
+pynput>=1.7.6
+pyautogui>=0.9.54
+
+# OCR capabilities
+pytesseract>=0.3.10
+Pillow>=9.0.0
+
+# System monitoring and window management
+psutil>=5.9.0
+pygetwindow>=0.0.9
+
+# Optional: Legacy window management (not needed for Alt+Tab mode)
+# pywin32>=304
+
+# Development and testing
+pytest>=7.0.0
+mock>=4.0.3
+watchdog>=3.0.0

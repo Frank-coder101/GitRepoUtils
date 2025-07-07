@@ -15,7 +15,7 @@ def run_cus_with_output():
     # Run CUS with timeout
     try:
         result = subprocess.run(
-            [r"c:/Users/gibea/Documents/GitRepoUtils/.venv/Scripts/python.exe", "CUS.py"],
+            ["python", "CUS.py"],
             capture_output=True,
             text=True,
             timeout=10  # 10 second timeout

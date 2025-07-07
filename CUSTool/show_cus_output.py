@@ -15,7 +15,7 @@ def test_cus_startup():
     # Run CUS with timeout to show startup
     try:
         process = subprocess.Popen(
-            [r"c:/Users/gibea/Documents/GitRepoUtils/.venv/Scripts/python.exe", "CUS.py"],
+            ["python", "CUS.py"],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
