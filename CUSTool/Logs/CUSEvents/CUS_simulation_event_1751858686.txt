@@ -1,0 +1,190 @@
+Trigger: Select an option:
+Action: type_4
+Timestamp: 1751858686
+Detection Method: Screen Capture + Tesseract OCR
+Extracted Text:
+Be]
+
+©®rRAVeSe vB
+
+@
+3
+
+BY & mains O @3As
+
+File Edit
+
+Selection View Go
+
+Configure trading system
+Activate EMERGENCY STOP
+
+Deactivate EMERGENCY STOP
+Show EMERGENCY STOP status
+- Exit wizard
+
+Select an option:
+2025-07-06 2
+2025-07-06 2:
+2025-07-06 21:
+EMERGENCY STOP is INACTIVE.
+
+vauNeE
+
+4
+
+Options:
+Configure trading system
+Activate EMERGENCY STOP
+Deactivate EMERGENCY STOP
+Show EMERGENCY STOP status
+- Exit wizard
+
+Select an option: 4
+2025-07-06 21:
+2025-07-06 2:
+2025-07-06 2
+EMERGENCY STOP is INACTIVE.
+
+vauNeE
+
+Options:
+1. Configure trading system
+2. Activate EMERGENCY STOP
+3. Deactivate EMERGENCY STOP
+4. Show EMERGENCY STOP status
+5. Exit wizard
+Select an option:
+
+® CUS safe.py
+
+® CUS Simple.py
+®@ CUSpy
+
+® diagnostic.py
+® hello_testpy
+
+= requirements.txt
+run safe_tests.bat
+run _shared_testbat
+run_test.bat
+safe_setup.bat
+
+setup_and_run.bat
+SETUP_COMMANDS.md
+
+show_cus_output.py
+
+OC CRRA
+
+simple_test.py
+
+> OUTLINE
+> TIMELINE
+
+setup_and_run_complete.bat
+
+Run
+
+ehea
+
+U
+
+c
+
+Terminal
+
+m
+
+Help <>
+
+34,494 INFO User selected option: 4
+34,498 INFO Raw user input: 4
+34,500 INFO Processed choice: 4
+
+40,502 INFO User selected option: 4
+40,506 INFO Raw user input: 4
+40,58 INFO Processed choice: 4
+
+(simulation_dictionary):
+
+ouTPuT
+
+DEBUG CONSOLE PORTS
+
+prosiems @®
+
+TERMINAL
+
+Configure trading system
+
+Activate EMERGE...
+
+[CUS] TRIGGER DETECTED: Select an option:
+[CUS] Performing action: type_4
+
+[CUS] About to type: ‘4"
+
+[CUS] Typed: *4* and pressed Enter
+
+os BR aumpemorar=resvs epee eOxe Bakiy
+
+P GitRepoutils
+
+By
+
+® test_safeappen DY % O -
+
+Boopict +-~ OH -- ~ x
+
+CHAT
+
+Roy
+Key Technical Wins:
+
+1. i@ Solved File Locking: Eliminated dependency on locked log
+files
+
+2. © Visual Monitoring: CUS “sees” the screen like a human user
+would
+
+3. @ Text Recognition: Tesseract OCR accurately reads console
+text
+
+4, i Real Input Simulation: Genuine keyboard events sent to
+target application
+
+5. [& Adaptive Response: Detects changes and responds
+immediately
+
+© ExtP shows menu — CUS detects “Select an option:" + CUS types
+"4" + Enter + ExtP receives input
+
+© This cycle repeats automatically for any configured triggers
+
+© No manual intervention required
+
+* Works with any console application
+
+Congratulations! You now have a fully functional, robust CLI
+automation system that can simulate user input in response to
+any text patterns displayed on screen. ¢>
+
+40 files changed
+® CUS_OCR Full.py CUSToo!
+® CUS_OCR.py CUSToo!
+
+® CUS Simple.py CUSToo!
+
+® CUS.py CUSToo!
+
+run shared test.bat CUSToo!
+run test.bat CUSToo!
+
+@ Add context... @ CUS.py Current file @
+
+44
+Agent v Claude Sonnet 4 v wo Py
+@Q_ n2,Col1 Spaces:4 UTF-8 {} Python €3 3.13.5(venv:venvy) &
+924M
+airs Sari

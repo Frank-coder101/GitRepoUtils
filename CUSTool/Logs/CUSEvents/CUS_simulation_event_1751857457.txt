@@ -1,0 +1,1 @@
+Trigger: Select an option:\nAction: type_4\nTimestamp: 1751857457\n

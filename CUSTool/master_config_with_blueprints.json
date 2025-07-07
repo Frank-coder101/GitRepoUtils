@@ -1,0 +1,46 @@
+{
+  "external_program": {
+    "path": "C:\\Users\\gibea\\Documents\\GitRepos\\DeFiHuddleTradingSystem\\main.py",
+    "args": ["--output", "output.log"],
+    "working_directory": "C:\\Users\\gibea\\Documents\\GitRepos\\DeFiHuddleTradingSystem",
+    "launch_delay": 5,
+    "auto_launch": true,
+    "auto_terminate": true
+  },
+  "source_analysis": {
+    "enabled": true,
+    "source_paths": [
+      "C:\\Users\\gibea\\Documents\\GitRepos\\DeFiHuddleTradingSystem"
+    ],
+    "blueprint_paths": [
+      "C:\\Users\\gibea\\Documents\\GitRepos\\DeFiHuddleTradingSystem\\docs",
+      "C:\\Users\\gibea\\Documents\\GitRepos\\DeFiHuddleTradingSystem\\docs\\prompts"
+    ],
+    "patterns": {
+      "menu_indicators": ["menu", "option", "choice", "select"],
+      "input_indicators": ["enter", "input", "type", "password"],
+      "exit_indicators": ["exit", "quit", "bye", "terminate"]
+    }
+  },
+  "test_execution": {
+    "run_mode": "comprehensive",
+    "max_execution_time": 3600,
+    "priority_filter": [1, 2, 3],
+    "retry_failures": true,
+    "generate_reports": true,
+    "include_documentation_tests": true
+  },
+  "integration": {
+    "use_existing_cus": true,
+    "cus_script": "CUS.py",
+    "monitor_external_errors": true,
+    "adaptive_timing": true
+  },
+  "reporting": {
+    "generate_html": true,
+    "generate_json": true,
+    "save_screenshots": true,
+    "detailed_logs": true,
+    "include_documentation_insights": true
+  }
+}

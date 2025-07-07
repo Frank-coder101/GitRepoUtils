@@ -1,0 +1,121 @@
+
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Test Sequence Execution Report</title>
+            <style>
+                body { font-family: Arial, sans-serif; margin: 20px; }
+                .header { background-color: #f0f0f0; padding: 20px; }
+                .metrics { display: flex; justify-content: space-around; margin: 20px 0; }
+                .metric { text-align: center; padding: 10px; background-color: #e0e0e0; }
+                .sequence { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
+                .success { background-color: #d4edda; }
+                .failed { background-color: #f8d7da; }
+                .skipped { background-color: #fff3cd; }
+                .steps { margin-top: 10px; }
+                .step { margin: 5px 0; padding: 5px; font-size: 0.9em; }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h1>Test Sequence Execution Report</h1>
+                <p>Generated on: 2025-07-06 21:43:39</p>
+            </div>
+            
+            <div class="metrics">
+                <div class="metric">
+                    <h3>3</h3>
+                    <p>Total Sequences</p>
+                </div>
+                <div class="metric">
+                    <h3>3</h3>
+                    <p>Completed</p>
+                </div>
+                <div class="metric">
+                    <h3>0</h3>
+                    <p>Failed</p>
+                </div>
+                <div class="metric">
+                    <h3>50.0%</h3>
+                    <p>Coverage</p>
+                </div>
+            </div>
+            
+            <h2>Sequence Details</h2>
+        
+            <div class="sequence completed">
+                <h3>test_invalid_inputs</h3>
+                <p>Test invalid menu inputs</p>
+                <p><strong>State:</strong> completed</p>
+                <p><strong>Priority:</strong> 2</p>
+                <p><strong>Steps:</strong> 2</p>
+                <p><strong>Coverage:</strong> 2 points</p>
+                
+                <div class="steps">
+                    <h4>Steps:</h4>
+            
+                    <div class="step">
+                        1. Invalid menu option - <em>StepResult.SUCCESS</em>
+                    </div>
+                
+                    <div class="step">
+                        2. Acknowledge error - <em>StepResult.SUCCESS</em>
+                    </div>
+                </div></div>
+            <div class="sequence completed">
+                <h3>test_rapid_input</h3>
+                <p>Test rapid key input</p>
+                <p><strong>State:</strong> completed</p>
+                <p><strong>Priority:</strong> 3</p>
+                <p><strong>Steps:</strong> 3</p>
+                <p><strong>Coverage:</strong> 1 points</p>
+                
+                <div class="steps">
+                    <h4>Steps:</h4>
+            
+                    <div class="step">
+                        1. Rapid input 1 - <em>StepResult.SUCCESS</em>
+                    </div>
+                
+                    <div class="step">
+                        2. Rapid input 2 - <em>StepResult.SUCCESS</em>
+                    </div>
+                
+                    <div class="step">
+                        3. Rapid input 3 - <em>StepResult.SUCCESS</em>
+                    </div>
+                </div></div>
+            <div class="sequence completed">
+                <h3>test_long_running</h3>
+                <p>Long running menu navigation</p>
+                <p><strong>State:</strong> completed</p>
+                <p><strong>Priority:</strong> 3</p>
+                <p><strong>Steps:</strong> 5</p>
+                <p><strong>Coverage:</strong> 2 points</p>
+                
+                <div class="steps">
+                    <h4>Steps:</h4>
+            
+                    <div class="step">
+                        1. Menu 1 - <em>StepResult.FAILED</em>
+                    </div>
+                
+                    <div class="step">
+                        2. Menu 2 - <em>StepResult.SUCCESS</em>
+                    </div>
+                
+                    <div class="step">
+                        3. Menu 3 - <em>StepResult.SUCCESS</em>
+                    </div>
+                
+                    <div class="step">
+                        4. Menu 4 - <em>StepResult.SUCCESS</em>
+                    </div>
+                
+                    <div class="step">
+                        5. Exit - <em>StepResult.SUCCESS</em>
+                    </div>
+                </div><h4>Errors:</h4><ul><li>Step 1 failed: Menu 1</li></ul></div>
+            </body>
+        </html>
+        

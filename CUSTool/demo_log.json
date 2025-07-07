@@ -1,0 +1,75 @@
+{
+  "timestamp": "2025-07-06T21:43:39.823211",
+  "metrics": {
+    "total_sequences": 3,
+    "completed_sequences": 3,
+    "failed_sequences": 0,
+    "skipped_sequences": 0,
+    "total_steps": 10,
+    "successful_steps": 9,
+    "failed_steps": 1,
+    "total_execution_time": 23.364989280700684,
+    "coverage_percentage": 50.0
+  },
+  "sequences": [
+    {
+      "name": "test_invalid_inputs",
+      "description": "Test invalid menu inputs",
+      "state": "completed",
+      "priority": 2,
+      "start_time": "2025-07-06T21:43:16.412058",
+      "end_time": "2025-07-06T21:43:21.875378",
+      "steps": 2,
+      "results": [
+        "success",
+        "success"
+      ],
+      "error_messages": [],
+      "coverage_achieved": [
+        "Select an option",
+        "Error:"
+      ]
+    },
+    {
+      "name": "test_rapid_input",
+      "description": "Test rapid key input",
+      "state": "completed",
+      "priority": 3,
+      "start_time": "2025-07-06T21:43:32.960718",
+      "end_time": "2025-07-06T21:43:39.776207",
+      "steps": 3,
+      "results": [
+        "success",
+        "success",
+        "success"
+      ],
+      "error_messages": [],
+      "coverage_achieved": [
+        "any"
+      ]
+    },
+    {
+      "name": "test_long_running",
+      "description": "Long running menu navigation",
+      "state": "completed",
+      "priority": 3,
+      "start_time": "2025-07-06T21:43:21.876767",
+      "end_time": "2025-07-06T21:43:32.960311",
+      "steps": 5,
+      "results": [
+        "failed",
+        "success",
+        "success",
+        "success",
+        "success"
+      ],
+      "error_messages": [
+        "Step 1 failed: Menu 1"
+      ],
+      "coverage_achieved": [
+        "Select an option",
+        "any"
+      ]
+    }
+  ]
+}

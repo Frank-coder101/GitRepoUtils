@@ -1,0 +1,94 @@
+[
+  {
+    "name": "test_invalid_inputs",
+    "description": "Test invalid menu inputs",
+    "steps": [
+      {
+        "trigger": "Select an option",
+        "action": "type_999",
+        "description": "Invalid menu option"
+      },
+      {
+        "trigger": "Error:",
+        "action": "press_enter",
+        "description": "Acknowledge error"
+      }
+    ],
+    "expected_path": [
+      "Error handling"
+    ],
+    "coverage_tags": [
+      "error_handling",
+      "invalid_input"
+    ],
+    "priority": 2
+  },
+  {
+    "name": "test_rapid_input",
+    "description": "Test rapid key input",
+    "steps": [
+      {
+        "trigger": "any",
+        "action": "type_1",
+        "description": "Rapid input 1"
+      },
+      {
+        "trigger": "any",
+        "action": "type_2",
+        "description": "Rapid input 2"
+      },
+      {
+        "trigger": "any",
+        "action": "type_3",
+        "description": "Rapid input 3"
+      }
+    ],
+    "expected_path": [
+      "Rapid input handling"
+    ],
+    "coverage_tags": [
+      "rapid_input",
+      "stress_test"
+    ],
+    "priority": 3
+  },
+  {
+    "name": "test_long_running",
+    "description": "Long running menu navigation",
+    "steps": [
+      {
+        "trigger": "Select an option",
+        "action": "type_1",
+        "description": "Menu 1"
+      },
+      {
+        "trigger": "Select an option",
+        "action": "type_2",
+        "description": "Menu 2"
+      },
+      {
+        "trigger": "Select an option",
+        "action": "type_3",
+        "description": "Menu 3"
+      },
+      {
+        "trigger": "Select an option",
+        "action": "type_4",
+        "description": "Menu 4"
+      },
+      {
+        "trigger": "any",
+        "action": "press_escape",
+        "description": "Exit"
+      }
+    ],
+    "expected_path": [
+      "Long navigation"
+    ],
+    "coverage_tags": [
+      "long_running",
+      "stress_test"
+    ],
+    "priority": 3
+  }
+]

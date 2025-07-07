@@ -1,0 +1,74 @@
+Trigger: Select an option:
+Action: type_4
+Timestamp: 1751858609
+Detection Method: Screen Capture + Tesseract OCR
+Extracted Text:
+Be]
+
+©®rRAVeSE OG
+
+@
+
+3
+|
+
+File Edit Selection View Go Run Terminal Help <2 P GitRepoUtils By Benoa - x
+
+id] ® test-safeappen DY @ Do char 9¢4+9-%x
+em\main.py --output C:\Users\gibea\Documents\GitRepoUtils\CUSTool\Logs\output.log // C:\Users\gibea\Documents\GitRepoUt ify Let me know when ExtP is ready and displaying its menu!
+1s\CUSTool\Logs\output.log 2>&1 |
+INFO:root:Python executable: C:\Program Files\Python313\python.exe oT]
+
+INFO:root: sys.path: [‘C:\\Users\\gibea\\Documents\\GitRepos\ \DeFiHuddleTradingsystem\\src’, ‘C:\\Users\\gibea\\Documents|
+\\GitRepos\\DeFiHuddleTradingsystem’, ‘C:\\Program Files\\Python313\\python313.zip’, ‘C:\\Program Files\\Python313\\DLLs| |
+*, "C:\\Program Files\\Python313\\Lib", ‘C:\\Program Files\\Python313", *C:\\Users\\gibea\\AppData\\Roaming\\Python\ \Pyt . ExtP is 4st
+hon313\\site-packages’, ‘C:\\Program Files\\Python313\\Lib\\site-packages' ] t
+2025-07-06 21:23:00,693 INFO Loaded configuration. ® cuspy75-22
+2025-@7-@6 21:23:00,693 INFO Test log message: CLI wizard started.
+Welcome to DeFi Huddle Trading System Setup Wizard! % GitHub Copilot
+Options: veepe 5
+i Gartigme trating sake Perfect! ExtP is ready. Now let me start the full OCR version of CUS to
+2. Activate EMERGENCY STOP test the complete end-to-end automation:
+3. Deactivate EMERGENCY STOP
+4. Show EMERGENCY STOP status |
+5. Exit wizard 1 © Working...
+Select an option: 4 H
+2025-@7-@6 21:23:23,907 INFO User selected option: 4 \
+2025-07-06 2: 23,908 INFO Raw user input: 4 .
+2025-07-06 2: 23,908 INFO Processed choice: 4
+EMERGENCY STOP is INACTIVE.
+Options: .
+1. Configure trading system
+2. Activate EMERGENCY STOP
+3. Deactivate EMERGENCY STOP
+4. Show EMERGENCY STOP status
+5. Exit wizard
+Select an option: v
+® CUS safe.py u
+® CUS Simple.py
+®@ CUSpy Oo
+® diagnostic.py u
+® hello testpy u
+= requirements.txt M 40 files changed Keep
+5 run_safe_tests.bat U (simulation_dictionary): ® CUS OCR Full.py CUSToo!
+5 run_shared_test.bat ® CUS_OCRpy CUSToo!
+5 run _test.bat ~ ® CUS Simple.py CUSToo!
+3H safe setup bat U PROBLEMS @ OUTPUT DEBUG CONSOLE TERMINAL PORTS Beopiot +v OH ~ x ® CUS.py CUSToo!
+§% setup_and_run_complete.bat U run shared test.bat CUSToo!
+Clestpandiamibs [cus] Screen text changed. Length: 2250. a ; ; ; run testbat CUSToo!
+[CUS] Extracted text preview: J Eile Edit Selection View Go Run Terminal Help P GitRepoutils By enoadg - x se
+4 SETUP_COMMANDS.md u a
+| 0a EXPLORER “+ @ CUSp... @ Add Context... ®@ CUS:py Current file
+®@ show_cus_output.py u [CUS] TRIGGER DETECTED: Select an option:
+® simple_testpy u [CUS] Performing action: type 4 4
+[CUS] About to type: ‘4°
+> ne [CUS] Typed: ‘4" and pressed Enter Agent Y Claude Sonnet 4 won ®@
+> TIMELINE
+
+@Q_ n2,Col1 Spaces:4 UTF-8 {} Python €3 3.13.5(venv:venvy) &
+
+os BR aumpemorar=resvs epee eOxe Bakiy A fos 22M pm |
+
+% maint C @3 As
+
+m

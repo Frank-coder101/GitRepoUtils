@@ -1,0 +1,58 @@
+{
+  "external_program_path": "C:\\Users\\gibea\\Documents\\GitRepos\\DeFiHuddleTradingSystem",
+  "execution_settings": {
+    "max_concurrent_sequences": 1,
+    "step_timeout": 30,
+    "sequence_timeout": 300,
+    "retry_failed_steps": true,
+    "max_retries": 3,
+    "pause_on_error": true,
+    "adaptive_timing": true
+  },
+  "monitoring": {
+    "screenshot_on_error": true,
+    "log_level": "INFO",
+    "metrics_interval": 60,
+    "state_tracking": true
+  },
+  "cus_integration": {
+    "cus_script_path": "CUS.py",
+    "use_existing_cus": true,
+    "restart_cus_on_failure": true
+  },
+  "reporting": {
+    "generate_html_report": true,
+    "save_detailed_logs": true,
+    "export_metrics": true
+  },
+  "defect_reporting": {
+    "enabled": true,
+    "capture_before_after": true,
+    "capture_sequence": false,
+    "annotate_screenshots": true,
+    "auto_generate_on_failure": true,
+    "severity_mapping": {
+      "external_crash": "Critical",
+      "external_error": "Error",
+      "cus_failure": "Error",
+      "ocr_mismatch": "Warning",
+      "timeout": "Warning"
+    },
+    "screenshot_settings": {
+      "save_original": true,
+      "save_annotated": true,
+      "annotation_color": "red",
+      "annotation_width": 3
+    }
+  },
+  "source_analysis": {
+    "source_paths": [
+      "C:\\Users\\gibea\\Documents\\GitRepos\\DeFiHuddleTradingSystem"
+    ],
+    "blueprint_paths": [
+      "C:\\Users\\gibea\\Documents\\GitRepos\\DeFiHuddleTradingSystem\\docs"
+    ],
+    "supported_extensions": [".py", ".cpp", ".c", ".java", ".cs", ".js", ".ts", ".go", ".rs"],
+    "documentation_extensions": [".md", ".txt", ".rst", ".doc", ".docx", ".pdf"]
+  }
+}

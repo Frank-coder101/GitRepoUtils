@@ -1,0 +1,61 @@
+Trigger: Select an option:
+Action: type_4
+Timestamp: 1751858692
+Detection Method: Screen Capture + Tesseract OCR
+Extracted Text:
+»J File Edit Selection View Go Run Terminal Help <> P GitRepoUtils By Baoog - x
+
+| EXPLORER “+ @ CUSpy [2] @ = @ CUS_OCR Fullpy [2] ® CUS Simple.py [=] ® CUS_OCRpy [& © test_safeappen DY % O == CHAT PED x
+> OPEN EDITORS [flunsaved) CUSTool > @ CUS.py >... “_—
+\ GITREPOUTILS 72 def load_simulation_dictionary(): Key Technical Wins:
+es return i}
+> -pytest_cache 76 with open(SIMULATION DICTIONARY FILE, “r") as file: 1. @ Solved File Locking: Eliminated dependency on locked log
+&® aor 7 try: —
+© wscode 78 return json.load(file) # Load dictionary from JSON format 2. © Visual Monitoring: CUS “sees” the screen like a human user
+p> 8 leunchjson 79 except json.JSONDecodeError: would
+Es {0 tasksjson 80 safe_print("Error: Invalid JSON format in simulation dictionary file.") @ Text Recognition: Tesseract OCR accurately reads console
+¥ CUSTool o a ccano ie
+Ce > _pycache 82 4, @ Real Input Simulation: Genuine keyboard events sent to
+target aj rion
+> .vscode
+B {Bl Adaptive Response: Detects changes and responds
+> Logs e an
+immediately
+> NewErrors
+A > NewEvents The System is Production Ready:
+> prompts © ExtP shows menu — CUS detects “Select an option:" + CUS types
+©) ¥ copilot “4” + Enter — ExtP receives input
+® CUS clean.py u © This cycle repeats automatically for any configured triggers
+® CUS_OCR Fullpy i} © No manual intervention required
+® CUS_OCRpy [) * Works with any console application
+© GUS Ry e Congratulations! You now have a fully functional, robust CLI
+® CUS Simple.py i} automation system that can simulate user input in response to
+® CUSpy o any text patterns displayed on screen. ¢*
+® diagnostic.py u eoag®
+® hello_test.py u
+= requirements.txt M 40 files changed
+run_safe_tests.bat u (simulation_dictionary): ® CUS_OCR Full.py CUSToo!
+run_shared_test.bat i} ® CUS_OCRpy CUSToo!
+run_test.bat I) © CUS Simple.py CUSToo!
+safe_setup.bat u PROBLEMS @ © OUTPUT DEBUG CONSOLE TERMINAL PORTS Boopict +v O WH -- ~ x ® CUS.py CUSToo!
+setup_and_run_complete.bat U == run shared _test.bat CUSToo!
+setup_and_run.bat SS run test.bat CUSToo!
+
+% SETUPCOMMANDSmd us“ COMF igure trading system
+
+ae @ Add Context... ® CUS,py Current file @
+2) ® show_cus_output.py u [CUS] TRIGGER DETECTED: Select an option:
+® simple_testpy u [CUS] Performing action: type 4 Edit files in your workspace in agent mode
+
+[cus] About to type: ‘4 .
+fp > OUTHNE [cus] Typed: *4" and pressed Enter ‘Agent Claude Sonnet 4 KOE
+> TIMELINE
+BY & mains O @3As @Q in2,colt Spaces:4 UTF-8 {} Python & 3.135(venv:veny) &
+
+9:24PM
+
+eae
+
+A fh ING
+
+och anremornarr ec Boeke Ba

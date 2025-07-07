@@ -1,0 +1,28 @@
+{
+  "simulation_dictionary_path": "simulation_dictionary_generated.json",
+  "exploration_plan_path": "exploration_plan.json",
+  "screenshots_path": "Logs/Screenshots",
+  "events_path": "Logs/CUSEvents",
+  "reports_path": "Logs/Reports",
+  "screen_region": null,
+  "poll_interval": 3,
+  "ocr_confidence_threshold": 0.7,
+  "safe_mode": false,
+  "exploration_mode": "systematic",
+  "max_attempts_per_scenario": 3,
+  "scenario_timeout": 60,
+  "tesseract_config": "--psm 6 -c tessedit_char_whitelist=0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz,.():!?- ",
+  "window_title_filter": "DeFi Huddle",
+  "ocr_preprocessing": {
+    "resize_factor": 2,
+    "convert_to_grayscale": true,
+    "apply_threshold": true,
+    "blur_kernel_size": 1
+  },
+  "logging": {
+    "level": "INFO",
+    "save_screenshots": true,
+    "save_ocr_text": true,
+    "save_interaction_logs": true
+  }
+}

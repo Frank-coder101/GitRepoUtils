@@ -1,0 +1,19 @@
+{
+  "external_program_path": "C:\\Users\\gibea\\Documents\\GitRepos\\DeFiHuddleTradingSystem",
+  "defect_reporting": {
+    "enabled": true,
+    "capture_before_after": true,
+    "capture_sequence": false,
+    "annotate_screenshots": true,
+    "auto_generate_on_failure": true
+  },
+  "execution_settings": {
+    "max_concurrent_sequences": 1,
+    "step_timeout": 30,
+    "pause_on_error": true
+  },
+  "cus_integration": {
+    "cus_script_path": "CUS.py",
+    "use_existing_cus": true
+  }
+}
