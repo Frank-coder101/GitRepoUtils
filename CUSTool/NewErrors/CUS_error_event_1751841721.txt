@@ -1,0 +1,4 @@
+Simulated log content for testing purposes.
+Select an option:
+Invalid input
+ERROR: Simulated error for testing.
