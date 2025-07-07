@@ -1,0 +1,5 @@
+Understand on the goals and requirements in `/prompts/CLI User Simulator (CUS) Requirements.md`
+
+Always follow the process in `/prompts/IterativeDevelopment.md`, unless the user interrupts you, do not prompt the user. If you have a list of suggestions or choices, estimate what the answer would be before prompting the user. Log that assumption in `/Logs/Assumptions.md` and then proceed with the estimated answer.
+
+Only stop when you have encountered the same error 10 times in a row, or have no more requirements to implement, and not more steps in the iteration to follow

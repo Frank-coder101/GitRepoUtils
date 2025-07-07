@@ -1,9 +1,11 @@
-# Iterative Troubleshooting Process for CUS.py development
+# Iterative Development Process for CUS.py
 
 ## CRITICAL DIRECTIVES
-1. Do not stop or ask for confirmation between steps; proceed automatically until all features and funtionalities are implemented, all tests pass and all errors and defects are fixed
+1. Never ask to create a venv
 
-2. Log each error, test update, and fix in a summary file for traceability
+2. Do not stop or ask for confirmation between steps; proceed automatically until all features and funtionalities are implemented, all tests pass and all errors and defects are fixed
+
+3. Log each error, test update, and fix in a summary file for traceability
 
 ## Start Iterative Process
 1. Launch the tests and log all errors automatically to a summary file.
@@ -16,5 +18,5 @@
    - Fix the underlying error in the code.
    - Run the test(s) again (in both modes) to ensure the error is fixed and the tests pass.
 
-3. Relaunch the tests and repeat the process until no errors remain.
+3. Find the next requirement to work on in `CLI User Simulator (CUS) Requirements.md` and repeat the above starting at step 1
 
