@@ -1,0 +1,44 @@
+{
+  "issue_id": "CUS_ISSUE_20250707_203911_8B8B04D9",
+  "timestamp": "2025-07-07T20:39:11.778372",
+  "test_run_id": "TESTRUN_20250707_203823_28CF7BF6",
+  "severity": "Warning",
+  "failure_type": "Validation_Failure",
+  "test_case_name": "Action Ineffectiveness",
+  "test_sequence_id": "INEFFECTIVE_ACTION_1751942351",
+  "failure_step": 1,
+  "screenshots": [
+    {
+      "screenshot_id": "CUS_ISSUE_20250707_203911_8B8B04D9_failure_1751942351",
+      "file_path": "C:\\Users\\gibea\\Documents\\GitRepos\\DeFiHuddleTradingSystem\\UserSimulator\\DefectPrompts\\screenshots\\CUS_ISSUE_20250707_203911_8B8B04D9_failure_1751942351.png",
+      "type": "failure",
+      "description": "Screenshot captured at time of test failure"
+    }
+  ],
+  "documentation_references": [
+    {
+      "file_path": "simulation_dictionary.txt",
+      "reference_type": "requirement",
+      "reference_id": "CUS-DICT",
+      "line_number": null,
+      "section_title": "CUS Action Dictionary"
+    }
+  ],
+  "related_test_cases": [
+    "CUS Action Effectiveness Tests"
+  ],
+  "dependency_chain": [
+    "CUS",
+    "ExtP",
+    "Screen Detection"
+  ],
+  "error_details": {
+    "error_type": "ineffective_action",
+    "error_message": "Action 'press_enter' did not remove trigger 'Error:' from screen",
+    "trigger": "Error:",
+    "screen_before": "x) File\nfs\n>\n\n\u00aet BR dl \u20ac&\n\n\u00ae\n$3 >\n\n>\n\nBA] & mains S @oAo *1\n\n\u20ac>\n\nX \u2014 @ EnhancedCUS.py\n\nCUSTool > @ CUS.py > @ main\n\nourpuT\n\n# Enhanced tracking variables\nfalse_negative_count = @\nvalidation_enabled = True\nenhanced_actions_available = 0\n\n# PHASE 1: ENHANCED VALIDATION FUNCTIONS\n\ndef validate_action_r",
+    "screen_after": ">) File Edit Selection View Go Run Terminal Help <> DO Untitled (Workspace)\n\n'INFO:root:Python executable: C:\\Program Files\\Python313\\python. exe. \u00a5 SETUP_COMMANDS Dy &% @ =:\n\nHINFO:root:sys.path: [\u2018C:\\\\Users\\\\gibea\\ \\Documents\\ \\GitRepos|\\\\DeFiHuddleTradingSystem\\\\src\u2019, \u2018C:\\\\Users\\\\gibea\\ \\Docunent",
+    "screenshot_path": "C:\\Users\\gibea\\Documents\\GitRepoUtils\\CUSTool\\Logs\\Screenshots\\screenshot_1751942348.png"
+  },
+  "system_context": {}
+}

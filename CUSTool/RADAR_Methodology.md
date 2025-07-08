@@ -338,3 +338,48 @@ class CUSRadarImplementation:
 - Scales to handle complex external systems
 
 This methodology goes beyond traditional approaches by being **purpose-built for automated testing of external systems** where requirements compliance is critical.
+
+
+Here is a list of code files in your project that relate to the three attached files, along with the relevant functions for each:
+
+---
+
+### 1. Conversation in UseCase_BrainstormDialog2.md
+**No Python code files directly implement functions named for or referencing "brainstorm"—the file is referenced in logs and documentation, but not in code functions.**
+
+---
+
+### 2. Research materials in UseCase_Discovery_Research.md
+**No Python code files directly implement functions named for or referencing "research"—the file is referenced in documentation and in the brainstorm dialog, but not in code functions.**
+
+---
+
+## Here is the list of files that contain code and class/function definitions implementing/related to the RADAR methodology (as of 2025-July-7)
+- `class RequirementsAnalyzer`
+  - `analyze_requirements(self, requirements_docs)`
+  - `extract_functional_reqs(self)`
+  - `extract_user_journeys(self)`
+  - `infer_edge_cases(self)`
+  - `build_traceability_matrix(self)`
+  - `map_artifact_relationships(self)`
+  - `infer_use_cases_from_traceability(self)`
+- `class ArchitectureAnalyzer`
+  - `discover_architecture(self, extP_path)`
+  - `identify_boundaries(self)`
+  - `extract_state_machines(self)`
+- `class DynamicAnalyzer`
+  - `analyze_runtime_behavior(self, extP_path, logs_path)`
+  - `analyze_execution_logs(self)`
+  - `track_state_changes(self)`
+- `class AnomalyDetector`
+  - `detect_requirements_violations(self, requirements, implementation, runtime_data)`
+  - `find_missing_implementations(self)`
+  - `detect_behavior_violations(self)`
+- `class RigorousTestGenerator`
+  - `generate_comprehensive_tests(self, radar_analysis)`
+  - `generate_requirements_tests(self)`
+  - `generate_behavior_tests(self)`
+- `class CUSRadarImplementation`
+  - `__init__(self, extP_path, requirements_path)`
+  - `execute_radar_analysis(self)`
+

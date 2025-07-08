@@ -1,0 +1,9 @@
+Prompt for REQ-004: CUS shall provide accurate feedback when ExtP configuration is incomplete
+
+Review all code in ExtP that provides feedback or error messages for configuration. For each place where the code does not:
+- Detect incomplete configuration states
+- Provide clear, actionable feedback to the user
+- Log the incomplete state and the feedback given
+- Trigger the correct CUS response
+
+Update the code to ensure this requirement is met and add tests if missing.

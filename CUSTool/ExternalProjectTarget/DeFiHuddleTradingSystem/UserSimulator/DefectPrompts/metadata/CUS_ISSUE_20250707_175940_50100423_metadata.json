@@ -1,0 +1,44 @@
+{
+  "issue_id": "CUS_ISSUE_20250707_175940_50100423",
+  "timestamp": "2025-07-07T17:59:40.511142",
+  "test_run_id": "TESTRUN_20250707_175800_90ADFC33",
+  "severity": "Warning",
+  "failure_type": "Validation_Failure",
+  "test_case_name": "Action Ineffectiveness",
+  "test_sequence_id": "INEFFECTIVE_ACTION_1751932780",
+  "failure_step": 1,
+  "screenshots": [
+    {
+      "screenshot_id": "CUS_ISSUE_20250707_175940_50100423_failure_1751932780",
+      "file_path": "C:\\Users\\gibea\\Documents\\GitRepos\\DeFiHuddleTradingSystem\\UserSimulator\\DefectPrompts\\screenshots\\CUS_ISSUE_20250707_175940_50100423_failure_1751932780.png",
+      "type": "failure",
+      "description": "Screenshot captured at time of test failure"
+    }
+  ],
+  "documentation_references": [
+    {
+      "file_path": "simulation_dictionary.txt",
+      "reference_type": "requirement",
+      "reference_id": "CUS-DICT",
+      "line_number": null,
+      "section_title": "CUS Action Dictionary"
+    }
+  ],
+  "related_test_cases": [
+    "CUS Action Effectiveness Tests"
+  ],
+  "dependency_chain": [
+    "CUS",
+    "ExtP",
+    "Screen Detection"
+  ],
+  "error_details": {
+    "error_type": "ineffective_action",
+    "error_message": "Action 'type_1' did not remove trigger 'Select an option:' from screen",
+    "trigger": "Select an option:",
+    "screen_before": "J File Edit Selection View Go Run Terminal\n\n| Qa EXPLORER\n\n_ExtPStartupManual.bat\n\u00a7% _ExtPStartupVisible.bat u\n\n2P % Advanced _UseCase_Discovery Techniques.md\n\u00ae AdvancedTestExecutor.py u\nI) \u00a5 Alternative Test_Anchoring_Concepts.md\n\u00ae AutomatedRemediationSystem.py u\nFS & Brainstormbialog2.md\n\u00ae CUS bas",
+    "screen_after": "BS)\nfs\n\n\u00aet BR dV \u20aco\n\n\u00ae\n3\n\nBA & mains S @oAo\n\nFile Edit\n\nSelection View Go Run\n\nEXPLORER,\n>q\n\nv @: Deactivate EMERGENCY STOP\n\u20184. Show EMERGENCY STOP status\nAS. Exit wizard\nSelect an option:\n\nTerminal\n\nHelp\n\n\u00ae CUSpy [e] x\n\n2025-07-07 17:58:45,448 INFO User selected option:\n\n2025-07-07 17:58:45,452 INF",
+    "screenshot_path": "C:\\Users\\gibea\\Documents\\GitRepoUtils\\CUSTool\\Logs\\Screenshots\\screenshot_1751932777.png"
+  },
+  "system_context": {}
+}

@@ -1,0 +1,261 @@
+=== GITHUB COPILOT: ExtP REQUIREMENTS ANALYSIS CONTINUATION (PART 2) ===
+
+This is a continuation. Please use this together with the previous part(s) for full context.
+
+REQUIREMENTS SOURCES (CONTINUED):
+{
+  "docs\\Project_Requirements.md::chunk_16": {
+    "source_type": "requirements_file",
+    "chunk_index": 16,
+    "total_chunks": 50,
+    "content": "# 6 Analysis and Scoring\nEach `instrument` (symbol) will be analyzed in a decomposed approach using `analysis methods`.\nThe overall scoring of each `instrument` will be broken down by each `analysis method` carrying their own score which are each moified by configurable weights (0-100)\n\n6.1 `Technical Analysis Methods`\nScore each item using PhD-level / institutional-grade analysis\n6.1.1 Regression forecasting  \n6.1.2 Regime states (Scalp, Long, Take Profit, Reversal, Liquidate, Short)  \n6.1.3 All 20 candle patterns  \n6.1.4 SMA 5, 9, 55, 200 (and crossovers)  \n6.1.5 EMA 21  \n6.1.6 Candle crossover of above SMAs and EMA  \n6.1.7 Reversals and divergences with RSI, CMF, MACD  \n6.1.8 Swing trade profiles, oscillators, contrarian setups  \n6.1.9 Momentum, streak logic, Fibonacci, Elliott wave, Bollinger Bands  \n6.1.10 Order block detection  \n6.1.11 Market depth (warn if unavailable)\n6.1.12 Multi-Timeframe Analysis (MTFA)  \n6.1.12.1 pull data for multiple configurable timeframes and re-runs all above `technical analysis` steps\n6.1.12.2 Each cross-timeframe agreement multiplies the score by a configurable factor\n\n"
+  },
+  "docs\\Project_Requirements.md::chunk_17": {
+    "source_type": "requirements_file",
+    "chunk_index": 17,
+    "total_chunks": 50,
+    "content": "# 7 Execution Cycles\n\n"
+  },
+  "docs\\Project_Requirements.md::chunk_18": {
+    "source_type": "requirements_file",
+    "chunk_index": 18,
+    "total_chunks": 50,
+    "content": "## 7.1 Execution Logic\n7.1.1 All cycles should be executed in parallel -if possible, easy to troubleshoot, easy to extend.\n7.1.2 Each cycle has priority over the other cycles (in the order they are documented) and preempts the cycles defined thereafter in this section\n7.1.3 Each cycle must track the `Average Cycle Time` and alert and log a warning if current cycle time is taking longer than 10% of the average time\n\n"
+  },
+  "docs\\Project_Requirements.md::chunk_19": {
+    "source_type": "requirements_file",
+    "chunk_index": 19,
+    "total_chunks": 50,
+    "content": "## 7.2 `Portfolio Protection` - `Cycle A` - Every Minute\n7.1.1 Evaluate each open position to determine if there is an action to be taken\n7.1.1.1 Determine if position should `urgently` be acted on if:\n7.1.1.1.1 The price is worse than the stop loss (meaning the stop loss order failed to trigger\nor\n7.1.1.1.2 If light weight assessment of the following is higher than tolerance level (configurable): \n7.1.1.1.2.1 liquidation risk, or, \n7.1.1.1.2.2 trade halt risk \n7.1.1.1.3 If 7.1.1.1.1 or 7.1.1.1.2.1 or 7.1.1.1.2.2 are true:\n7.1.1.1.3.1 exit the position using logic defined in `Trade Execution` and flag the request as `urgent`\n7.1.1.1.3.2 display a non modal alert message to the user detailing the action and why it was taken and also place message in `trade log`\n7.1.1.1.3.3 go to next open position\n7.1.1.2 If no `urgent` action for the position, then run `technical analysis` and \n7.1.1.2.1 If new score is lower than minimum acceptable score, exit position using logic defined in `Trade Execution`\n7.1.1.2.1.1 log an alert message in `trade log` detailing the action and why it was taken\n7.1.1.2.1.2 go to next open position\n7.1.1.3 Persist new score of position in `portfolio positions score` list\n7.1.1.4 If `Dynamic End-of-Day Position Closing` (configurable) is set to true, meaning all positions are to be closed before end of regular trading hours\n7.1.1.4.1 If Now is > `Market Close Today` - `Shrink Down Time Offset` (configurable, default to 15 minutes)\n7.1.1.4.1.1 If old score > new score\n7.1.1.4.1.1.1 Close postion using logic defined in `Trade Execution` as \"urgent\"\n7.1.1.4.2 If Now is > `Market Close Today` - `Cutoff Time Offset` (configurable, default to 5 minutes)\n7.1.1.4.2.1 Close postion using logic defined in `Trade Execution` as \"urgent\"\n7.1.1.5 Pending orders review\n7.1.1.5.1 if there are any pending limit orders for the position that not are braket related (stop loss or take profit) \n7.1.1.5.2 If the old score is higher than new score by more than 1% (configurable)\n7.1.1.5.2.1 If it is a scale in order, prepare a message to the user \"There is a shrinking opportunity pending order\" \n7.1.1.5.2.2 If it is a scale out order, prepare a message to the user \"There is a growing risk pending order\"\n7.1.1.5.3 If the new score is higher than old score by more than 1%  (configurable)\n7.1.1.5.3.1 If it is a scale in order, prepare a message to the user \"There is a growing opportunity pending order\" \n7.1.1.5.3.2 If it is a scale out order, prepare a message to the user \"Unexpected shrinking risk pending order please verify situation\"\n7.1.1.5.4 the message must offer a `mute timer` attribute for that specific message type and specifc symbol in case the user does not want to get more notifications on this specific issue. Mute durations are calculated using 4 drop down values to compute the timer's expiry date. The drop downs are: 7.1.1.5.4.1 minutes (0,5,15,30,45), 7.1.1.5.4.2 hours (0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23), 7.1.1.5.4.3 days (0,1,2,3,4,5,6), 7.1.1.5.4.4 weeks (0,1,2,3,4). All the drop downs are set to 0 for defaults. When all drop downs are set to 0 no `mute timer` should be created.\n7.1.1.5.5 if a message was prepared, and a related `mute timer` has not expired, send the message with the the details of the order (limit, market, etc.) and log the message to the trade log - regardless of the timer status.\n7.1.1.5.6 delete any expired related `mute timer`\n7.1.1.6 Position sizing review\n7.1.1.6.1 If position is in the top 30% of `portfolio positions score` list\n7.1.1.6.1.1 and portolio available funds is more than 30% of the total account value\n7.1.1.6.1.2 and the position is below the `max position size` by at least `minimum position size`\n7.1.1.6.1.3 then scale into the position with an order of `minimum position size` using logic defined in `Trade Execution` (will use limit order type)\n7.1.1.6.2 If position is in the bottom 30% of `portfolio positions score` list\n7.1.1.6.2.1 and portolio available funds is less than 30% of the total account value\n7.1.1.6.2.2 then scale out of the position with an order reducing the position in half using logic defined in `Trade Execution` (will use limit order type)\n7.1.1.7 If there is no trailing stop-loss order on the position\n7.1.1.7.1 if there was a stop-loss order (other than trailing)\n7.1.1.7.1.1 cancel that order\n7.1.1.7.1.2 persist data about the original stop-loss order\n7.1.1.7.1.3 calculate and create new trailing stop-loss order\n\n"
+  },
+  "docs\\Project_Requirements.md::chunk_20": {
+    "source_type": "requirements_file",
+    "chunk_index": 20,
+    "total_chunks": 50,
+    "content": "## 7.2 `Opportunity Monitoring` - `Cycle B` - Every Minute\n7.2.1 `Opportunity Monitoring` - `News Wire Events` - Cycle B.1 - Prefer Event Driven - Every Minute\n7.2.1.1 Get a notification call back about a news event (or less preferred, pull from news feed each time for new articles)\n7.2.1.2 Parse the content of the news article for stock symbols\n7.2.1.3 Add each symbol to `opportunities_identified` list\n7.2.2 `Opportunity Monitoring` - `Market Scanning` - Cycle B.2 - Every Minute\n7.2.2.1 Conduct market scan and add symbols to `opportunities_identified` list\n7.2.3 `Opportunity Monitoring` - `Long Term Entries` - Cycle B.3 - Every Minute \n7.2.3.1 Pull top 10 (configurable) and bottom 10 (configurable) instruments from the `persistent watchlist` that have the highest absolute (+ or -) price change % during the last 2 minutes\n7.2.3.2 Add symbols to `opportunities_identified` list\n7.2.7 Analyze each symbol in `opportunities_identified` using logic section in 6 `Analysis and Scoring`\n7.2.7.1 Remove from the `opportunities_identified` list any symbol whose score is lower than the `minimum acceptable score to take a position`\n7.2.7.2 If the porfolio balance is too low for another `minimum position size`\n7.2.7.2.1 Create a `temporary symbol table` with columns \"symbol, score, size, source\" \n7.2.7.2.2 Merge the list of current portfolio position (and their symbol, score, using their market value for size, and \"portfolio\" as source) with the list of `opportunities_identified` (and their symbol, score, using minimum initial position size setting value for the size column for all of those items, and \"new\" as source). Sort the `temporary symbol table` by score column with the highest at the top\n7.2.7.2.3 Loop through each temporary symbol item\n7.2.7.2.3.1 if adding the temporary symbol size to a `temporary total value` variable would be less than than the total allowed trading size of the portfolio\n7.2.7.2.3.1.1 add temporary symbol size to the `temporary total value`\n7.2.7.2.3.2 if not\n7.2.7.2.3.2.1 if the \"source\" value of the given temporary symbol is \"portfolio\" \n7.2.7.2.3.2.1.1 exit the position using logic defined in `Trade Execution` and flag the request as `urgent`\n7.2.7.2.3.2.2 Remove the temporary symbol whether \"source\" value is \"portfolio\" or \"new\"\n7.2.7.2.4 Loop again through each temporary symbol item remaining in `temporary symbol table`\n7.2.7.2.4.1 if the \"source\" value of the given temporary symbol is \"new\" \n7.2.7.2.4.1.1 open a new position using logic defined in `Trade Execution`\n\n"
+  },
+  "docs\\Project_Requirements.md::chunk_21": {
+    "source_type": "requirements_file",
+    "chunk_index": 21,
+    "total_chunks": 50,
+    "content": "# 8 Trade Execution\n8.1 If opening a position\n8.1.1 Calculate appropriate sizing using config constraints   \n8.1.2 Use limit order if long, use market order if short\n8.1.3 Always with trailing stop loss order using configurable percentage\n8.2 If closing position\n8.2.1 If the closing order is classified as `urgent` or is a short position being closed\n8.2.1.1 close position at market value\n8.2.2 Cancel any and all pending orders for that symbol\n8.2.3 Use calculate limit order using 2 second price slope\n8.3 Add order details (and any related order cancelations) to order confirmation log\n8.4 Remove position from `portfolio positions score` list\n\n"
+  },
+  "docs\\Project_Requirements.md::chunk_22": {
+    "source_type": "requirements_file",
+    "chunk_index": 22,
+    "total_chunks": 50,
+    "content": "# 9 Deferred Requirements\n\n"
+  },
+  "docs\\Project_Requirements.md::chunk_23": {
+    "source_type": "requirements_file",
+    "chunk_index": 23,
+    "total_chunks": 50,
+    "content": "## 9.1 Options\n9.1.1 Automated option chain scanning\n9.1.2 Contract roll logic  \n9.1.3 Detection of improperly formatted dates in options symbols\n\n"
+  },
+  "docs\\Project_Requirements.md::chunk_24": {
+    "source_type": "requirements_file",
+    "chunk_index": 24,
+    "total_chunks": 50,
+    "content": "## 9.2 Crypto Trades\n9.2.1 Crypto assets (e.g., COINBASE:XRPUSDC) will be analyzed and scored  \n9.2.2 Coinbase Prime API integration is deferred\n\n"
+  },
+  "docs\\Project_Requirements.md::chunk_25": {
+    "source_type": "requirements_file",
+    "chunk_index": 25,
+    "total_chunks": 50,
+    "content": "## 9.3 Futures\n9.3.1 Automated futures expiry handling  \n9.3.2 Contract roll logic  \n9.3.3 Symbol auto-expansion  \n9.3.4 Detection of improperly formatted dates in futures symbols\n\n"
+  },
+  "docs\\Project_Requirements.md::chunk_26": {
+    "source_type": "requirements_file",
+    "chunk_index": 26,
+    "total_chunks": 50,
+    "content": "# 11 Enhanced and Clarified Requirements\n\n"
+  },
+  "docs\\Project_Requirements.md::chunk_27": {
+    "source_type": "requirements_file",
+    "chunk_index": 27,
+    "total_chunks": 50,
+    "content": "## 11.1 Risk Assessment Metrics\n- 11.1.1 \"Liquidation risk\" is defined as: (current price - liquidation price) / current price, where liquidation price is the price at which the broker would forcibly close the position due to insufficient margin.\n- 11.1.2 \"Trade halt risk\" is defined as the probability of a trading halt event for a symbol, based on recent volatility, news events, and exchange halt lists. Configurable threshold (default: 5% probability).\n- 11.1.3 All risk thresholds must be configurable parameters, settable in the configuration interface.\n\n"
+  },
+  "docs\\Project_Requirements.md::chunk_28": {
+    "source_type": "requirements_file",
+    "chunk_index": 28,
+    "total_chunks": 50,
+    "content": "## 11.2 Score Thresholds\n- 11.2.1 The \"minimum acceptable score\" is a configurable parameter (default: 60 out of 100).\n- 11.2.2 Scoring methodology must be clearly documented and accessible to the user.\n\n"
+  },
+  "docs\\Project_Requirements.md::chunk_29": {
+    "source_type": "requirements_file",
+    "chunk_index": 29,
+    "total_chunks": 50,
+    "content": "## 11.3 Temporary Symbol Table Algorithm\n- 11.3.1 Temporary symbol table must include: symbol, score, size (in dollars), and source (\"portfolio\" or \"new\").\n- 11.3.2 Total allowed trading size is configurable (default: 100% of available funds).\n- 11.3.3 Pseudocode for merging and processing the table must be included in system documentation.\n\n"
+  },
+  "docs\\Project_Requirements.md::chunk_30": {
+    "source_type": "requirements_file",
+    "chunk_index": 30,
+    "total_chunks": 50,
+    "content": "## 11.4 News and Scanning Details\n- 11.4.1 News source is configurable (default: Yahoo Finance RSS or NewsAPI.org).\n- 11.4.2 Market scanning to use configurable API (default: IBKR TWS or Yahoo screener).\n\n"
+  },
+  "docs\\Project_Requirements.md::chunk_31": {
+    "source_type": "requirements_file",
+    "chunk_index": 31,
+    "total_chunks": 50,
+    "content": "## 11.5 2-Second Price Slope Algorithm\n- 11.5.1 Defined as: (P_now - P_2s_ago)/2, used to adjust limit order price.\n\n"
+  },
+  "docs\\Project_Requirements.md::chunk_32": {
+    "source_type": "requirements_file",
+    "chunk_index": 32,
+    "total_chunks": 50,
+    "content": "## 11.6 Trailing Stop Logic\n- 11.6.1 For longs: stop = max(current price - X%), and must never decrease.\n- 11.6.2 For shorts: stop = min(current price + X%), and must never increase.\n- 11.6.3 X is configurable (default: 2%).\n\n"
+  },
+  "docs\\Project_Requirements.md::chunk_33": {
+    "source_type": "requirements_file",
+    "chunk_index": 33,
+    "total_chunks": 50,
+    "content": "## 11.7 Multi-Timeframe Analysis\n- 11.7.1 Must run on 1m, 5m, 15m (default) and multiply score by configurable factor if alignment found.\n\n"
+  },
+  "docs\\Project_Requirements.md::chunk_34": {
+    "source_type": "requirements_file",
+    "chunk_index": 34,
+    "total_chunks": 50,
+    "content": "## 11.8 User Interface Decisions\n- 11.8.1 First release must support GUI based configuration screen.\n\n"
+  },
+  "docs\\Project_Requirements.md::chunk_35": {
+    "source_type": "requirements_file",
+    "chunk_index": 35,
+    "total_chunks": 50,
+    "content": "## 11.9 Error Identification and Logging\n- 11.9.1 Use format \u201cE#####\u201d (e.g., E10001), log to file with timestamp and call stack.\n- 11.9.2 Log rotation every 10MB or 7 days; file location configurable.\n\n"
+  },
+  "docs\\Project_Requirements.md::chunk_36": {
+    "source_type": "requirements_file",
+    "chunk_index": 36,
+    "total_chunks": 50,
+    "content": "## 11.10 Documentation Requirement\n- 11.10.1 Must include install guide, config wizard help, error ID list, trade logic references.\n\n"
+  },
+  "docs\\Project_Requirements.md::chunk_37": {
+    "source_type": "requirements_file",
+    "chunk_index": 37,
+    "total_chunks": 50,
+    "content": "## 11.11 Quantifiable Language\n- 11.11.1 Replace vague terms like \u201cPhD-level\u201d with exact indicators (e.g., regression forecasting, candle analysis).\n\n"
+  },
+  "docs\\Project_Requirements.md::chunk_38": {
+    "source_type": "requirements_file",
+    "chunk_index": 38,
+    "total_chunks": 50,
+    "content": "# 12 Numbering Consistency\n12.1 All section and subsection numbers must be strictly sequential. Any reserved numbers must be explained or removed.\n\n"
+  },
+  "docs\\Project_Requirements.md::chunk_39": {
+    "source_type": "requirements_file",
+    "chunk_index": 39,
+    "total_chunks": 50,
+    "content": "# 13 Glossary of Trading Terms\n13.1 A glossary must define all specialized terms or link to authoritative external references (e.g., \u201corder block detection\u201d, \u201cregime state\u201d).\n\n"
+  },
+  "docs\\Project_Requirements.md::chunk_40": {
+    "source_type": "requirements_file",
+    "chunk_index": 40,
+    "total_chunks": 50,
+    "content": "# 15 Mobile and Remote Access (Deferred, Configurable)\n- 15.1 The solution must expose a lightweight web-based or mobile-accessible interface (read-only in initial version) that allows the user to:\n  - 15.1.1 View current portfolio positions and their scores\n  - 15.1.2 View active orders and their status\n  - 15.1.3 Receive push notifications or alerts for key events (e.g., errors, trades, risk conditions)\n- 15.2 This interface must connect securely to the local system and must be disabled by default.\n- 15.3 Authentication must be enforced before granting access to remote data.\n- 15.4 Full trading functionality via remote access is deferred to a future version.\n\n"
+  },
+  "docs\\Project_Requirements.md::chunk_41": {
+    "source_type": "requirements_file",
+    "chunk_index": 41,
+    "total_chunks": 50,
+    "content": "# 16 Crash Recovery and Resume Logic\n- 16.1 The system must persist the following runtime state to disk every 30 seconds (configurable):\n  - 16.1.1 Portfolio positions and scores\n  - 16.1.2 Current active orders\n  - 16.1.3 Execution cycle status and counters\n- 16.2 Upon restart, the system must detect the presence of a saved state and prompt the user to:\n  - 16.2.1 Resume previous session\n  - 16.2.2 Start a clean session (with archive of prior state)\n- 16.3 If live orders are present at restart, the system must re-fetch and reconcile them with internal state before any cycles are started.\n\n"
+  },
+  "docs\\Project_Requirements.md::chunk_42": {
+    "source_type": "requirements_file",
+    "chunk_index": 42,
+    "total_chunks": 50,
+    "content": "# 17 Margin Monitoring and Account-Level Alerts (Upgraded and Decomposed)\n17.1 The system shall query broker APIs every 60 seconds (configurable) to retrieve:\n    17.1.1 Cash balance\n    17.1.2 Maintenance margin available\n    17.1.3 Margin usage percentage\n17.2 If margin usage exceeds a configurable threshold (default: 80%):\n    17.2.1 The system shall log the event with an `E#####` error code, timestamp, and details.\n    17.2.2 The system shall display a persistent warning to the user until margin usage drops below the threshold.\n    17.2.3 The system shall halt all new position entries until margin usage is below the threshold.\n17.3 If broker API returns errors or stale data for more than 3 consecutive attempts:\n    17.3.1 The system shall notify the user with a clear alert and log the event.\n    17.3.2 The system shall skip the impacted cycle and attempt to recover in the next scheduled check.\n\n"
+  },
+  "docs\\Project_Requirements.md::chunk_43": {
+    "source_type": "requirements_file",
+    "chunk_index": 43,
+    "total_chunks": 50,
+    "content": "# 18 Manual Override and Emergency Stop Functionality (Upgraded and Decomposed)\n18.1 The user shall be able to activate `EMERGENCY STOP` via a key press or UI button, which:\n    18.1.1 Cancels all open orders immediately\n    18.1.2 Halts all execution cycles\n    18.1.3 Prevents new trades from being submitted until trading is re-enabled by the user\n18.2 The system shall confirm activation and deactivation of emergency stop via a user prompt or confirmation dialog.\n18.3 Emergency stop state shall persist across restarts unless explicitly cleared by the user.\n\n"
+  },
+  "docs\\Project_Requirements.md::chunk_44": {
+    "source_type": "requirements_file",
+    "chunk_index": 44,
+    "total_chunks": 50,
+    "content": "# 19 Automated Symbol Lifecycle Management (Upgraded and Decomposed)\n19.1 The system shall periodically review symbols on the `persistent watchlist` for:\n    19.1.1 10-day average volume below 10,000 (configurable)\n    19.1.2 Zero price movement in past 5 days (configurable)\n    19.1.3 Any broker error returned while fetching data for symbol\n19.2 If a symbol matches any criteria above, it shall be flagged for deactivation.\n19.3 Deactivated symbols shall:\n    19.3.1 Be removed from active cycles\n    19.3.2 Be tagged as \"disabled\" in the watchlist file (not deleted)\n    19.3.3 Appear in a \"flagged symbols\" section in the UI\n19.4 Users shall be able to manually re-activate a disabled symbol from the UI or watchlist file.\n\n"
+  },
+  "docs\\Project_Requirements.md::chunk_45": {
+    "source_type": "requirements_file",
+    "chunk_index": 45,
+    "total_chunks": 50,
+    "content": "# 20 Market Hours and Edge Case Handling (Upgraded and Decomposed)\n20.1 Before placing any order, the system shall:\n    20.1.1 Determine if the market is open for the symbol\u2019s exchange\n    20.1.2 Prevent orders during pre-market/after-hours unless explicitly enabled\n20.2 On holidays or early close days:\n    20.2.1 Adjust execution cycle windows to match early close time\n    20.2.2 Recalculate `Shrink Down Time Offset` and `Cutoff Time Offset` accordingly\n\n"
+  },
+  "docs\\Project_Requirements.md::chunk_46": {
+    "source_type": "requirements_file",
+    "chunk_index": 46,
+    "total_chunks": 50,
+    "content": "# 21 Broker Disconnection and Retry Logic (Upgraded and Decomposed)\n21.1 All broker API interactions shall use a retry mechanism:\n    21.1.1 Retry failed API calls up to 3 times with exponential backoff\n    21.1.2 If failure persists, log `E#####`, notify the user, and skip the impacted cycle\n\n"
+  },
+  "docs\\Project_Requirements.md::chunk_47": {
+    "source_type": "requirements_file",
+    "chunk_index": 47,
+    "total_chunks": 50,
+    "content": "# 22 Position-Level Trade Journaling for Strategy Debugging (Upgraded and Decomposed)\n22.1 For every executed trade, the system shall log a trade journal entry containing:\n    22.1.1 Entry and exit timestamps\n    22.1.2 Entry score and signal rationale\n    22.1.3 Exit reason (e.g., TP hit, SL triggered, manual override)\n    22.1.4 Related screenshots or indicator snapshots if configured\n    22.1.5 Performance metrics: P&L, drawdown, slippage\n22.2 Trade journal entries shall be both human-readable and machine-readable (CSV and JSON).\n\n"
+  },
+  "docs\\Project_Requirements.md::chunk_48": {
+    "source_type": "requirements_file",
+    "chunk_index": 48,
+    "total_chunks": 50,
+    "content": "# 23 Broker Capability Validation Layer (Upgraded and Decomposed)\n23.1 At startup, the system shall perform a capability check on the connected broker account for:\n    23.1.1 Supported order types (e.g., bracket, trailing stop)\n    23.1.2 Max open order and contract limits\n    23.1.3 Required permissions for data access (e.g., real-time market data)\n23.2 If any required capability is missing, the system shall warn the user before starting any cycle.\n\n"
+  },
+  "docs\\Project_Requirements.md::chunk_49": {
+    "source_type": "requirements_file",
+    "chunk_index": 49,
+    "total_chunks": 50,
+    "content": "# 24 Risk-to-Reward Ratio Enforcement (Upgraded and Decomposed)\n24.1 Each trade opportunity shall include a projected reward-to-risk ratio based on entry, take-profit, and stop-loss levels.\n24.2 If R:R < configurable minimum (default: 1.5):\n    24.2.1 Exclude the trade from execution queue\n    24.2.2 Log as rejected opportunity with justification\n\n"
+  },
+  "docs\\Project_Requirements.md::chunk_50": {
+    "source_type": "requirements_file",
+    "chunk_index": 50,
+    "total_chunks": 50,
+    "content": "## 24. Execution Mode-Driven Configuration\n24.1 All environment variables and execution parameters must be set based on the current EXECUTION_MODE.\n24.2 If EXECUTION_MODE is not explicitly supplied, it must default to \"backtest\".\n24.3 The following execution modes are supported:\n    - backtest\n    - live\n    - unit (for unit testing)\n    - integration (for integration testing)\n24.4 For each execution mode, the following environment variables and parameters must be set:\n    - backtest:\n        - No external dependencies required.\n        - Use mock data sources.\n    - live:\n        - IBKR_HOST: Must be set to the Interactive Brokers host.\n        - IBKR_PORT: Must be set to the Interactive Brokers port.\n        - IBKR_CLIENT_ID: Must be set to a unique client ID.\n    - unit:\n        - Simulated environment with no external dependencies.\n    - integration:\n        - All external integrations must be active and validated.\n        - IBKR_HOST, IBKR_PORT, and IBKR_CLIENT_ID must be set.\n"
+  },
+  "README.md::chunk_1": {
+    "source_type": "auto_discovered",
+    "chunk_index": 1,
+    "total_chunks": 12,
+    "content": "# DeFi Huddle Trading System\n\n"
+  },
+  "README.md::chunk_2": {
+    "source_type": "auto_discovered",
+    "chunk_index": 2,
+    "total_chunks": 12,
+    "content": "## Overview\nA cross-platform, automated trading system for retail investors, supporting both backtesting and live trading with Interactive Brokers. Features user-friendly configuration, guided setup, audit logging, AI optimization, and SQLite persistence.\n\n"
+  },
+  "README.md::chunk_3": {
+    "source_type": "auto_discovered",
+    "chunk_index": 3,
+    "total_chunks": 12,
+    "content": "## Features\n- BackTesting and Live trading modes\n- Interactive Brokers API integration (TWS, Client Portal)\n- Backtrader for backtesting\n- SQLite for persistence\n- AI optimizer (OpenAI API)\n- Unified audit logging\n- Persistent watchlist (Google Drive sync planned)\n- User-friendly CLI wizard for onboarding\n\n"
+  },
+  "README.md::chunk_4": {
+    "source_type": "auto_discovered",
+    "chunk_index": 4,
+    "total_chunks": 12,
+    "content": "## Setup Instructions\n1. Install Python 3.11+\n2. Clone this repository\n3. Install dependencies: `pip install -r requirements.txt`\n4. Run the application: `python main.py`\n\n"
+  },
+  "README.md::chunk_5": {
+    "source_type": "auto_discovered",
+    "chunk_index": 5,
+    "total_chunks": 12,
+    "content": "## Usage\n- On first launch, follow the CLI wizard to configure your account and preferences.\n- Select BackTesting or Live mode as needed.\n\n"
+  },
+  "README.md::chunk_6": {
+    "source_type": "auto_discovered",
+    "chunk_index": 6,
+    "total_chunks": 12,
+    "content": "## Troubleshooting\n- Check the audit log at `~/.defihuddle_audit.log` for errors.\n- Ensure your Interactive Brokers credentials are correct.\n- For support, see the documentation in `/docs`.\n\n"
+  },
+  "README.md::chunk_7": {
+    "source_type": "auto_discovered",
+    "chunk_index": 7,
+    "total_chunks": 12,
+    "content": "## Running Tests\n- All tests are environment-agnostic. To run all tests:\n\n  ```sh\n  python -m unittest discover -s DeFiHuddleTradingSystem/tests\n  ```\n- The test suite automatically ensures the `src` directory is on `sys.path` for all test runs.\n\n"
+  }
+}
+
+(Do not repeat instructions. Continue as if this is appended to the previous prompt.)

@@ -49,11 +49,9 @@ This principle applies universally to ALL users and ALL technical debugging scen
 5. **Full test**: `python CUS.py` (requires manual interaction)
 
 ### Automated Setup:
-- Use `setup_and_run_complete.bat` for full automated setup
 - Use `SETUP_COMMANDS.md` for detailed manual steps
 
 ### Directory Structure Verification:
 - Must have: `Logs/`, `NewErrors/`, `simulation_dictionary.txt`
-- Check with: `setup_test_environment.bat` (in CodeArchive if needed)
 
 **IMPORTANT**: Always verify dependencies and directory structure before running full CUS tests.

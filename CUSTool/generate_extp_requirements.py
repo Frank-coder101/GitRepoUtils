@@ -12,25 +12,36 @@ import argparse
 from pathlib import Path
 
 class ExtPRequirementsGenerator:
-    def __init__(self):
+    def __init__(self, exclude_patterns=None):
         self.version = "1.0.0"
         self.max_file_size = 1024 * 5  # 5KB per file to stay under limits
         self.total_context_limit = 1024 * 20  # 20KB total to be safe
+        self.exclude_patterns = exclude_patterns or []
         
     def discover_requirements_sources(self, extp_path, requirements_file=None, requirements_folder=None):
         """Discover all requirements sources"""
+        print(f"[DEBUG] Discovering requirements sources in: {extp_path}")
         sources = []
         
         # User-specified requirements file
         if requirements_file and os.path.exists(requirements_file):
+            print(f"[DEBUG] Including user-specified requirements file: {requirements_file}")
             sources.append(("requirements_file", requirements_file))
+        else:
+            if requirements_file:
+                print(f"[DEBUG] User-specified requirements file not found: {requirements_file}")
         
         # User-specified requirements folder
         if requirements_folder and os.path.exists(requirements_folder):
+            print(f"[DEBUG] Including user-specified requirements folder: {requirements_folder}")
             for pattern in ["*.md", "*.txt", "*.rst"]:
                 files = glob.glob(os.path.join(requirements_folder, "**", pattern), recursive=True)
                 for file in files[:5]:  # Limit to avoid size issues
+                    print(f"[DEBUG] Found in requirements folder: {file}")
                     sources.append(("requirements_folder", file))
+        else:
+            if requirements_folder:
+                print(f"[DEBUG] User-specified requirements folder not found: {requirements_folder}")
         
         # Auto-discovery in ExtP directory
         auto_patterns = [
@@ -41,31 +52,50 @@ class ExtPRequirementsGenerator:
         for pattern in auto_patterns:
             files = glob.glob(os.path.join(extp_path, pattern), recursive=True)
             for file in files[:3]:  # Limit auto-discovered files
+                print(f"[DEBUG] Auto-discovered requirements file: {file}")
                 sources.append(("auto_discovered", file))
         
+        print(f"[DEBUG] Final requirements sources: {sources}")
         return sources
     
     def scan_extp_codebase(self, extp_path):
         """Scan ExtP codebase for key files"""
+        print(f"[DEBUG] Scanning codebase at: {extp_path}")
         important_files = []
         
         # Look for main entry points
         entry_patterns = ["main.py", "app.py", "run.py", "start.py", "__main__.py"]
         for pattern in entry_patterns:
             files = glob.glob(os.path.join(extp_path, "**", pattern), recursive=True)
+            print(f"[DEBUG] Entry pattern '{pattern}' found: {files}")
             important_files.extend(files[:2])  # Max 2 of each type
         
         # Look for configuration files
         config_patterns = ["config.py", "settings.py", "*.ini", "*.yaml", "*.yml", "*.json"]
         for pattern in config_patterns:
             files = glob.glob(os.path.join(extp_path, "**", pattern), recursive=True)
+            print(f"[DEBUG] Config pattern '{pattern}' found: {files}")
             important_files.extend(files[:2])  # Max 2 of each type
         
         # Look for CLI/wizard files (specific to our use case)
         cli_patterns = ["*cli*.py", "*wizard*.py", "*menu*.py", "*interface*.py"]
         for pattern in cli_patterns:
             files = glob.glob(os.path.join(extp_path, "**", pattern), recursive=True)
+            print(f"[DEBUG] CLI pattern '{pattern}' found: {files}")
             important_files.extend(files[:3])  # Max 3 CLI files
+        
+        # Add all Python files in all subdirectories
+        all_py_files = glob.glob(os.path.join(extp_path, "**", "*.py"), recursive=True)
+        print(f"[DEBUG] All .py files found: {all_py_files}")
+        # Exclude files matching any exclude pattern
+        filtered_py_files = []
+        for f in all_py_files:
+            if not any(pat.lower() in f.lower() for pat in self.exclude_patterns):
+                filtered_py_files.append(f)
+            else:
+                print(f"[DEBUG] Excluded by pattern: {f}")
+        important_files.extend(filtered_py_files)
+        print(f"[DEBUG] Important files after filtering: {important_files}")
         
         return list(set(important_files))  # Remove duplicates
     
@@ -85,7 +115,8 @@ class ExtPRequirementsGenerator:
             return f"[ERROR READING FILE: {e}]"
     
     def generate_directory_structure(self, extp_path, max_depth=2):
-        """Generate a compact directory structure view"""
+        """Generate a compact directory structure view for the ExtP target directory only"""
+        print(f"[DEBUG] Scanning directory structure at: {extp_path}")
         structure = {}
         
         def scan_dir(path, current_depth):
@@ -110,6 +141,49 @@ class ExtPRequirementsGenerator:
             return items
         
         return scan_dir(extp_path, 0)
+    
+    def _chunk_markdown_file(self, filepath, max_chunk_size=4096):
+        """Split a markdown file into logical chunks at headings, each chunk <= max_chunk_size bytes"""
+        print(f"[DEBUG] Chunking markdown file: {filepath}")
+        with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
+            lines = f.readlines()
+        chunks = []
+        current_chunk = []
+        current_size = 0
+        for line in lines:
+            if line.strip().startswith('#') and current_chunk:
+                # Start new chunk at heading
+                if current_size > max_chunk_size:
+                    # If chunk is too big, split at previous heading
+                    print(f"[DEBUG] Chunk exceeded max size at heading: {line.strip()}")
+                chunks.append(''.join(current_chunk))
+                current_chunk = []
+                current_size = 0
+            current_chunk.append(line)
+            current_size += len(line.encode('utf-8'))
+        if current_chunk:
+            chunks.append(''.join(current_chunk))
+        # Further split any chunk that is still too large
+        final_chunks = []
+        for chunk in chunks:
+            if len(chunk.encode('utf-8')) <= max_chunk_size:
+                final_chunks.append(chunk)
+            else:
+                # Split by paragraphs if still too large
+                paras = chunk.split('\n\n')
+                para_chunk = []
+                para_size = 0
+                for para in paras:
+                    para_size += len(para.encode('utf-8')) + 2
+                    para_chunk.append(para)
+                    if para_size > max_chunk_size:
+                        final_chunks.append('\n\n'.join(para_chunk))
+                        para_chunk = []
+                        para_size = 0
+                if para_chunk:
+                    final_chunks.append('\n\n'.join(para_chunk))
+        print(f"[DEBUG] Markdown file {filepath} split into {len(final_chunks)} chunks.")
+        return final_chunks
     
     def generate_standardized_prompt(self, extp_path, requirements_file=None, requirements_folder=None):
         """Generate the standardized prompt for GitHub Copilot"""
@@ -206,6 +280,9 @@ REQUIREMENTS SOURCES:
 
 KEY CODE FILES:
 {json.dumps(context_data["code_files"], indent=2)}
+
+SUMMARY OF INCLUDED/SKIPPED/CHUNKED FILES:
+{json.dumps(context_data.get('summary', {}), indent=2)}
 
 EXPECTED OUTPUT STRUCTURE:
 
@@ -328,6 +405,9 @@ ANALYSIS INSTRUCTIONS:
 Based on the ExtP analysis context provided above, please generate these three JSON files with comprehensive, production-ready requirements validation rules.
 
 === END REQUEST ===
+
+---
+If this is part 1 of a multi-part prompt, the next part will be in a file named copilot_analysis_prompt_part2.txt in the same folder. Continue reading the next part for additional requirements/code context.
 """
         
         return prompt.strip()
@@ -343,6 +423,176 @@ Based on the ExtP analysis context provided above, please generate these three J
         with open(output_file, 'w', encoding='utf-8') as f:
             json.dump(context_data, f, indent=2)
         print(f"📊 Context metadata saved to: {output_file}")
+
+    def print_full_directory_structure(self, extp_path):
+        """Print the full directory structure for developer validation (one-time step)"""
+        for root, dirs, files in os.walk(extp_path):
+            level = root.replace(extp_path, '').count(os.sep)
+            indent = ' ' * 2 * level
+            print(f"{indent}{os.path.basename(root)}/")
+            subindent = ' ' * 2 * (level + 1)
+            for f in files:
+                print(f"{subindent}{f}")
+
+    def generate_summary(self, included_files, skipped_files, chunked_files):
+        """Generate a summary of what was included, skipped, or chunked and why"""
+        summary = {
+            "included_files": included_files,
+            "skipped_files": skipped_files,
+            "chunked_files": chunked_files
+        }
+        return summary
+
+    def generate_multi_part_prompts(self, extp_path, requirements_file=None, requirements_folder=None, output_dir=None, base_filename="copilot_analysis_prompt.txt"):
+        """Generate multi-part prompts with semantic chunking for large requirements files"""
+        if output_dir is None:
+            output_dir = os.path.join(os.getcwd(), "ExternalProjectPrompts")
+        os.makedirs(output_dir, exist_ok=True)
+
+        # Discover requirements sources
+        requirements_sources = self.discover_requirements_sources(
+            extp_path, requirements_file, requirements_folder
+        )
+        # Scan codebase
+        important_files = self.scan_extp_codebase(extp_path)
+        # Generate directory structure
+        directory_structure = self.generate_directory_structure(extp_path)
+
+        # Print full directory structure for developer validation
+        print("\n[DEVELOPER VALIDATION] Full ExtP directory structure:")
+        self.print_full_directory_structure(extp_path)
+
+        # Batch requirements sources with semantic chunking for markdown
+        req_batches = []
+        req_batch = {}
+        req_batch_size = 0
+        included_files = []
+        skipped_files = []
+        chunked_files = []
+        for source_type, filepath in requirements_sources:
+            ext = os.path.splitext(filepath)[1].lower()
+            if ext in [".md", ".markdown"]:
+                # Use semantic chunking for markdown
+                chunks = self._chunk_markdown_file(filepath, max_chunk_size=self.max_file_size)
+                for i, chunk in enumerate(chunks):
+                    chunk_id = f"{os.path.relpath(filepath, extp_path)}::chunk_{i+1}"
+                    chunk_meta = {
+                        "source_type": source_type,
+                        "chunk_index": i+1,
+                        "total_chunks": len(chunks),
+                        "content": chunk
+                    }
+                    chunk_len = len(chunk)
+                    if chunk_len > self.max_file_size:
+                        chunked_files.append(chunk_id)
+                    included_files.append(chunk_id)
+                    # ...existing code...
+            else:
+                # Non-markdown: treat as a single chunk, but truncate if too large
+                content = self.read_file_safely(filepath)
+                rel_path = os.path.relpath(filepath, extp_path)
+                content_len = len(content)
+                if content_len > self.max_file_size:
+                    chunked_files.append(rel_path)
+                included_files.append(rel_path)
+                # ...existing code...
+        # Now batch code files (unchanged for now, but can add chunking for code later)
+        code_file_batches = []
+        code_batch = {}
+        code_batch_size = 0
+        for filepath in important_files:
+            content = self.read_file_safely(filepath)
+            rel_path = os.path.relpath(filepath, extp_path)
+            content_len = len(content)
+            if code_batch_size + content_len > self.total_context_limit and code_batch:
+                code_file_batches.append(code_batch)
+                code_batch = {}
+                code_batch_size = 0
+            code_batch[rel_path] = content
+            code_batch_size += content_len
+        if code_batch:
+            code_file_batches.append(code_batch)
+
+        # Calculate total parts
+        total_parts = len(req_batches) + len(code_file_batches)
+        is_multi_part = total_parts > 1
+
+        # Add summary to each context_data
+        summary = self.generate_summary(included_files, skipped_files, chunked_files)
+
+        # Interleave requirements and code files in batching
+        interleaved_batches = []
+        max_batches = max(len(req_batches), len(code_file_batches))
+        for i in range(max_batches):
+            if i < len(req_batches):
+                interleaved_batches.append(("requirements", req_batches[i]))
+            if i < len(code_file_batches):
+                interleaved_batches.append(("code", code_file_batches[i]))
+        # Write each batch as a separate prompt file (interleaved)
+        prompt_files = []
+        part_number = 1
+        for batch_type, batch in interleaved_batches:
+            if batch_type == "requirements":
+                context_data = {
+                    "metadata": {
+                        "timestamp": datetime.now().isoformat(),
+                        "version": self.version,
+                        "extp_path": str(extp_path),
+                        "generator": "ExtPRequirementsGenerator",
+                        "is_multi_part": is_multi_part,
+                        "total_parts": len(interleaved_batches)
+                    },
+                    "directory_structure": directory_structure if part_number == 1 else {},
+                    "requirements_sources": batch,
+                    "code_files": {},
+                    "total_context_size": sum(len(v["content"]) for v in batch.values()),
+                    "summary": summary
+                }
+                if part_number == 1:
+                    prompt = self._build_prompt_template(context_data)
+                    filename = base_filename
+                else:
+                    prompt = self._build_requirements_continuation_prompt_template(context_data, part_number)
+                    filename = base_filename.replace(".txt", f"_part{part_number}.txt")
+            else:
+                context_data = {
+                    "metadata": {
+                        "is_multi_part": is_multi_part,
+                        "total_parts": len(interleaved_batches)
+                    },
+                    "directory_structure": {},
+                    "requirements_sources": {},
+                    "code_files": batch,
+                    "total_context_size": sum(len(v) for v in batch.values()),
+                    "summary": summary
+                }
+                prompt = self._build_continuation_prompt_template(context_data, part_number)
+                filename = base_filename.replace(".txt", f"_part{part_number}.txt")
+            output_path = os.path.join(output_dir, filename)
+            self.save_prompt_to_file(prompt, output_path)
+            prompt_files.append(output_path)
+            part_number += 1
+        print(f"\n📝 Multi-part prompts written: {prompt_files}")
+        return prompt_files
+
+    def _build_requirements_continuation_prompt_template(self, context_data, part_number):
+        """Build a continuation prompt template for additional requirements sources"""
+        prompt = f"""
+=== GITHUB COPILOT: ExtP REQUIREMENTS ANALYSIS CONTINUATION (PART {part_number}) ===\n\nThis is a continuation. Please use this together with the previous part(s) for full context.\n\nREQUIREMENTS SOURCES (CONTINUED):\n{json.dumps(context_data["requirements_sources"], indent=2)}\n\nSUMMARY OF INCLUDED/SKIPPED/CHUNKED FILES:\n{json.dumps(context_data.get('summary', {}), indent=2)}\n\n(Do not repeat instructions. Continue as if this is appended to the previous prompt.)\n---\nIf there is another part, continue reading the next file (copilot_analysis_prompt_part{part_number+1}.txt) for more context.\n"""
+        return prompt.strip()
+
+    def _build_continuation_prompt_template(self, context_data, part_number):
+        """Build a continuation prompt template for additional code files"""
+        prompt = f"""
+=== GITHUB COPILOT: ExtP REQUIREMENTS ANALYSIS CONTINUATION (PART {part_number}) ===\n\nThis is a continuation. Please use this together with the previous part(s) for full context.\n\nKEY CODE FILES (CONTINUED):\n{json.dumps(context_data['code_files'], indent=2)}\n\nSUMMARY OF INCLUDED/SKIPPED/CHUNKED FILES:\n{json.dumps(context_data.get('summary', {}), indent=2)}\n\n(Do not repeat instructions. Continue as if this is appended to the previous prompt.)\n---\nIf there is another part, continue reading the next file (copilot_analysis_prompt_part{part_number+1}.txt) for more context.\n"""
+        return prompt.strip()
+
+def load_llm_limits(llm_name, config_path="llm_limits.json"):
+    with open(config_path, "r", encoding="utf-8") as f:
+        limits = json.load(f)
+    if llm_name not in limits:
+        raise ValueError(f"LLM '{llm_name}' not found in {config_path}")
+    return limits[llm_name]
 
 def main():
     parser = argparse.ArgumentParser(
@@ -361,6 +611,12 @@ def main():
         help="Path to a folder containing requirements documents"
     )
     parser.add_argument(
+        "--exclude-patterns",
+        nargs="*",
+        default=["test", "tests"],
+        help="List of substrings; any code file containing one will be excluded (default: test, tests)"
+    )
+    parser.add_argument(
         "--output-prompt",
         default="copilot_analysis_prompt.txt",
         help="Output file for the generated prompt"
@@ -370,37 +626,37 @@ def main():
         default="prompt_metadata.json",
         help="Output file for context metadata"
     )
-    
+    parser.add_argument(
+        "--llm",
+        default="gpt-4o",
+        help="Target LLM name (must match an entry in llm_limits.json)"
+    )
     args = parser.parse_args()
-    
+    # Load LLM limits
+    llm_limits = load_llm_limits(args.llm)
+    # Set batching/chunking limits from config
+    ExtPRequirementsGenerator.max_file_size = llm_limits["recommended_prompt_bytes"] // 8  # e.g. 1/8th of prompt
+    ExtPRequirementsGenerator.total_context_limit = llm_limits["recommended_prompt_bytes"]
     # Validate ExtP path
     if not os.path.exists(args.extp_path):
         print(f"❌ Error: ExtP path does not exist: {args.extp_path}")
         return 1
-    
-    # Generate requirements analysis prompt
-    generator = ExtPRequirementsGenerator()
-    
+    generator = ExtPRequirementsGenerator(exclude_patterns=args.exclude_patterns)
     try:
-        prompt, context_data = generator.generate_standardized_prompt(
+        generator.generate_multi_part_prompts(
             extp_path=args.extp_path,
             requirements_file=args.requirements_file,
-            requirements_folder=args.requirements_folder
+            requirements_folder=args.requirements_folder,
+            output_dir=os.path.join(os.getcwd(), "ExternalProjectPrompts"),
+            base_filename=os.path.basename(args.output_prompt)
         )
-        
-        # Save outputs
-        generator.save_prompt_to_file(prompt, args.output_prompt)
-        generator.save_context_metadata(context_data, args.output_metadata)
-        
         print("\n✅ SUCCESS!")
         print("Next steps:")
-        print(f"1. Copy the content of '{args.output_prompt}' to GitHub Copilot Chat")
+        print(f"1. Copy the content of the generated prompt file(s) in 'ExternalProjectPrompts' to GitHub Copilot Chat")
         print("2. Copilot will generate three JSON files")
         print("3. Save the JSON files for CUS to use")
         print("4. Run CUS with requirements validation enabled")
-        
         return 0
-        
     except Exception as e:
         print(f"❌ Error generating prompt: {e}")
         import traceback

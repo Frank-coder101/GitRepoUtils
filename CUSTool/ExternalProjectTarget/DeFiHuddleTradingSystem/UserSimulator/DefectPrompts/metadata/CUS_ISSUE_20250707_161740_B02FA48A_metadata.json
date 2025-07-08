@@ -1,0 +1,44 @@
+{
+  "issue_id": "CUS_ISSUE_20250707_161740_B02FA48A",
+  "timestamp": "2025-07-07T16:17:40.400093",
+  "test_run_id": "TESTRUN_20250707_161441_5F58DE35",
+  "severity": "Error",
+  "failure_type": "CUS_Simulation_Failure",
+  "test_case_name": "Action Effectiveness Failure",
+  "test_sequence_id": "ACTION_FAILURE_1751926660",
+  "failure_step": 1,
+  "screenshots": [
+    {
+      "screenshot_id": "CUS_ISSUE_20250707_161740_B02FA48A_failure_1751926660",
+      "file_path": "C:\\Users\\gibea\\Documents\\GitRepos\\DeFiHuddleTradingSystem\\UserSimulator\\DefectPrompts\\screenshots\\CUS_ISSUE_20250707_161740_B02FA48A_failure_1751926660.png",
+      "type": "failure",
+      "description": "Screenshot captured at time of test failure"
+    }
+  ],
+  "documentation_references": [
+    {
+      "file_path": "simulation_dictionary.txt",
+      "reference_type": "requirement",
+      "reference_id": "CUS-DICT",
+      "line_number": null,
+      "section_title": "CUS Action Dictionary"
+    }
+  ],
+  "related_test_cases": [
+    "CUS Simulation Tests"
+  ],
+  "dependency_chain": [
+    "CUS",
+    "ExtP",
+    "Screen Detection"
+  ],
+  "error_details": {
+    "error_type": "cus_simulation",
+    "error_message": "Action 'type_1' repeated 3 times without expected result",
+    "trigger": "Select an option:",
+    "action": "type_1",
+    "repeat_count": 3,
+    "screen_content": "J File Edit Selection View Go Run Terminal\n\noO SOURCE CONTROL\n\n\\ REPOSITORIES\np GitRepoUtils Git # main OC Y BW SO\n\n\\ CHANGES\nie Y Changes\n\n\u00ae AutomatedRemediationSystem.py CUSToo!\n\nCUS _ExtP_Testing_Guide.md CUSToo!\nCUS.py CUSToo!\ndeploy_production.bat CUSToo!\nEnhancedCUS.py CUSToo!\nEnhancedTestCaseGenerator.py CUSToo!\nlaunch_cus_stepbystep.bat CUSToo!\nlaunch_cus.bat CUSToo!\nlaunch_test_extp.bat CUSToo! goat\nmethod1_comprehensive_validation.py CU...\nmethod! _validation_reportjson CUSToo!\nproduction status_check. py CUSToo!\nProductionValidationReportmd CUSToo!\nProductionValidationResults,json CUSToo!\nProductionValidationTest.py CUSToo!\nrequirements,json CUSToo!\nsimulation_dictionary.txt CUSToo!\nY GRAPH Fatc\u00ae\u00a9 %\u00a5SO0-\n\u00a9 Requirements Analysis Upgrade Re... Gam @\n\u00ae First Defect Prompt Loop Pass Frank-coder101\n\nCPO HRHR OCH e \u00ab\n\n@\u00a9@ > BR 4)\n\ns\u00ab@\n\nse\nZecccecclecccccMcc |\n\nstill stuck on logs and unit testing setup Frank-c...\nInitial setup Frank-coder101\n\u00a9 Initial commit for CLI User Simulator"
+  },
+  "system_context": {}
+}

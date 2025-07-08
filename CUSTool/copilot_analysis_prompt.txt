@@ -1,0 +1,215 @@
+=== GITHUB COPILOT: ExtP REQUIREMENTS ANALYSIS REQUEST ===
+
+REQUEST METADATA:
+{
+  "timestamp": "2025-07-08T06:54:19.652091",
+  "version": "1.0.0",
+  "extp_path": "ExternalProjectTarget\\DeFiHuddleTradingSystem",
+  "generator": "ExtPRequirementsGenerator"
+}
+
+ANALYSIS PURPOSE:
+Generate comprehensive requirements validation rules for CUS (CLI User Simulator) to validate ExtP (External Program) behavior against requirements rather than just code implementation.
+
+CRITICAL REQUIREMENT:
+The generated rules must distinguish between:
+- CRITICAL: Requirements violations and workflow progression failures
+- WARNING: Code behavior mismatches and implementation issues
+- INFO: Technical details and successful operations
+
+ANALYSIS CONTEXT:
+
+DIRECTORY STRUCTURE:
+{
+  "README.md": "3327 bytes",
+  "UserSimulator/": {
+    "DefectPrompts/": {
+      "CUS_ISSUE_20250707_161514_09F12224.md": "2696 bytes",
+      "CUS_ISSUE_20250707_161529_334EFA03.md": "2718 bytes",
+      "CUS_ISSUE_20250707_161544_183C636E.md": "2698 bytes",
+      "CUS_ISSUE_20250707_161550_1FCF54BF.md": "3229 bytes",
+      "CUS_ISSUE_20250707_161606_E1BD4D5A.md": "2709 bytes",
+      "CUS_ISSUE_20250707_161620_086A77DA.md": "2711 bytes",
+      "CUS_ISSUE_20250707_161627_1C71DDC0.md": "3229 bytes",
+      "CUS_ISSUE_20250707_161642_2D5CEA76.md": "2697 bytes"
+    }
+  },
+  "ValidDEFECTPROMPT.txt": "34 bytes",
+  "__pycache__/": {
+    "bootstrap.cpython-313.pyc": "1574 bytes"
+  },
+  "bootstrap.py": "2672 bytes",
+  "config/": {}
+}
+
+REQUIREMENTS SOURCES:
+{
+  "README.md": {
+    "source_type": "auto_discovered",
+    "content": "# DeFi Huddle Trading System\n\n## Overview\nA cross-platform, automated trading system for retail investors, supporting both backtesting and live trading with Interactive Brokers. Features user-friendly configuration, guided setup, audit logging, AI optimization, and SQLite persistence.\n\n## Features\n- BackTesting and Live trading modes\n- Interactive Brokers API integration (TWS, Client Portal)\n- Backtrader for backtesting\n- SQLite for persistence\n- AI optimizer (OpenAI API)\n- Unified audit logging\n- Persistent watchlist (Google Drive sync planned)\n- User-friendly CLI wizard for onboarding\n\n## Setup Instructions\n1. Install Python 3.11+\n2. Clone this repository\n3. Install dependencies: `pip install -r requirements.txt`\n4. Run the application: `python main.py`\n\n## Usage\n- On first launch, follow the CLI wizard to configure your account and preferences.\n- Select BackTesting or Live mode as needed.\n\n## Troubleshooting\n- Check the audit log at `~/.defihuddle_audit.log` for errors.\n- Ensure your Interactive Brokers credentials are correct.\n- For support, see the documentation in `/docs`.\n\n## Running Tests\n- All tests are environment-agnostic. To run all tests:\n\n  ```sh\n  python -m unittest discover -s DeFiHuddleTradingSystem/tests\n  ```\n- The test suite automatically ensures the `src` directory is on `sys.path` for all test runs.\n\n## Integration Testing with Interactive Brokers (IBKR)\n\nTo run integration tests or live trading, you must have TWS or IB Gateway running and accessible. Set up your broker config as follows:\n\n```\n\"broker\": {\n    \"type\": \"TWS\",           # or \"IBG\" for IB Gateway\n    \"host\": \"127.0.0.1\",      # TWS/IBG host\n    \"port\": 7497,               # TWS default port (7497 for paper, 7496 for live)\n    \"clientId\": 1               # Any unique integer\n}\n```\n\nSet the environment variable `TEST_MODE=integration` to enable real API calls:\n\n- On Windows PowerShell:\n  ```powershell\n  $env:TEST_MODE='integration'; python -m unittest discover -s DeFiHuddleTradingSystem/tests\n  ```\n- On Linux/macOS:\n  ```bash\n  TEST_MODE=integration python -m unittest discover -s DeFiHuddleTradingSystem/tests\n  ```\n\nIf TWS/IB Gateway is not running or the config is incorrect, integration tests will fail with a clear error message.\n\n## Quickstart Example\n1. Launch the CLI wizard: `python main.py`\n2. Follow prompts to configure your account and preferences.\n3. Select BackTesting or Live mode.\n4. Review audit logs at `~/.defihuddle_audit.log` for activity and errors.\n\n## Glossary of Key Terms\n- **BackTesting**: Simulated trading using historical data.\n- **Live Trading**: Real trades with Interactive Brokers.\n- **Audit Log**: Centralized log of all trading activity and errors.\n- **Watchlist**: Persistent list of symbols to monitor/trade.\n- **Configurable**: Any setting or logic the user can change via UI or config file.\n\n## Configuration & Customization\n- All major settings are accessible via the CLI wizard or config files in `/config`.\n- See `/docs/Project_Requirements.md` for a list of all configurable items.\n\n## Error Handling\n- Errors are logged in the audit log and displayed in plain language.\n- For troubleshooting, see `/docs/DevelopmentProcessAssumptionsLog.md` and `/docs/Architecture_Document.md`.\n"
+  },
+  "requirements.txt": {
+    "source_type": "auto_discovered",
+    "content": "ib_insync\nbacktrader\nopenai\nholidays\n"
+  },
+  "docs\\Requirements Traceability Matrix.csv": {
+    "source_type": "auto_discovered",
+    "content": "# This file is intentionally left empty. Please refer to 'docs/autogenerated/Requirements Traceability Matrix.csv' for the up-to-date, AI-generated requirements-to-code traceability matrix.\n"
+  },
+  "docs\\autogenerated\\Requirements Traceability Matrix.csv": {
+    "source_type": "auto_discovered",
+    "content": "[FILE TOO LARGE: 29068 bytes - skipped for size limits]"
+  },
+  "docs\\Architecture_Document.md": {
+    "source_type": "auto_discovered",
+    "content": "[FILE TOO LARGE: 12783 bytes - skipped for size limits]"
+  },
+  "docs\\AssumptionsLog.md": {
+    "source_type": "auto_discovered",
+    "content": ""
+  },
+  "docs\\DevelopmentProcessAssumptionsLog.md": {
+    "source_type": "auto_discovered",
+    "content": "[FILE TOO LARGE: 14903 bytes - skipped for size limits]"
+  }
+}
+
+KEY CODE FILES:
+{
+  "src\\core\\persistence.py": "import sqlite3\nimport os\n\nDB_PATH = os.path.expanduser(\"~/.defihuddle_trading.db\")\n\nclass Persistence:\n    @staticmethod\n    def get_connection():\n        return sqlite3.connect(DB_PATH)\n\n    @staticmethod\n    def init_db():\n        conn = Persistence.get_connection()\n        c = conn.cursor()\n        c.execute('''CREATE TABLE IF NOT EXISTS logs (\n            id INTEGER PRIMARY KEY AUTOINCREMENT,\n            timestamp TEXT,\n            level TEXT,\n            message TEXT\n        )''')\n        c.execute('''CREATE TABLE IF NOT EXISTS watchlist (\n            id INTEGER PRIMARY KEY AUTOINCREMENT,\n            symbol TEXT UNIQUE\n        )''')\n        c.execute('''CREATE TABLE IF NOT EXISTS backtest_results (\n            id INTEGER PRIMARY KEY AUTOINCREMENT,\n            strategy TEXT,\n            result TEXT,\n            timestamp TEXT\n        )''')\n        conn.commit()\n        conn.close()\n\n    @staticmethod\n    def save_backtest_result(strategy, result):\n        conn = Persistence.get_connection()\n        c = conn.cursor()\n        c.execute('INSERT INTO backtest_results (strategy, result, timestamp) VALUES (?, ?, datetime(\"now\"))', (strategy, str(result)))\n        conn.commit()\n        conn.close()\n",
+  "tests\\test_cli_wizard.py": "import os, sys\n# Ensure both project root and src are on sys.path\nsys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))\nsys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))\nimport bootstrap\nimport unittest\nfrom unittest.mock import patch\nfrom src.core.config_manager import ConfigManager\nfrom src.ui.cli_wizard import run_cli_wizard\n\nclass TestCliWizard(unittest.TestCase):\n    @patch('builtins.input', side_effect=['1', '10000', 'TWS', 'testuser', 'testpass', '5'])\n    def test_run_cli_wizard(self, mock_input):\n        config = ConfigManager.default_config()\n        run_cli_wizard(config)\n        self.assertEqual(config['funds'], 10000.0)\n        self.assertEqual(config['broker']['type'], 'TWS')\n        self.assertEqual(config['broker']['username'], 'testuser')\n        self.assertEqual(config['broker']['password'], 'testpass')\n\n    @patch('builtins.input', side_effect=['invalid', '5'])\n    def test_invalid_input(self, mock_input):\n        config = ConfigManager.default_config()\n        with self.assertLogs('src.ui.cli_wizard', level='INFO') as log:\n            run_cli_wizard(config)\n        self.assertIn('Invalid option. Please try again.', log.output)\n\nif __name__ == \"__main__\":\n    unittest.main()\n",
+  "tests\\test_risk_engine.py": "import os, sys\n# Ensure both project root and src are on sys.path\nsys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))\nsys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))\nimport bootstrap\nimport unittest\nfrom src.core.risk_engine import RiskEngine\n\nclass TestRiskEngine(unittest.TestCase):\n    def test_check_risk(self):\n        config = {}\n        engine = RiskEngine(config)\n        if os.environ.get('TEST_MODE', 'unit').lower() == 'integration':\n            with self.assertRaises(NotImplementedError):\n                engine.check_risk({'symbol': 'AAPL', 'qty': 10})\n        else:\n            result = engine.check_risk({'symbol': 'AAPL', 'qty': 10})\n            self.assertTrue(result)\n\nif __name__ == \"__main__\":\n    unittest.main()\n",
+  "tests\\test_error_handler.py": "import os, sys\n# Ensure both project root and src are on sys.path\nsys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))\nsys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))\nimport bootstrap\nimport unittest\nfrom src.core.error_handler import ErrorHandler\n\nclass TestErrorHandler(unittest.TestCase):\n    def test_handle_error(self):\n        try:\n            raise ValueError(\"Test error\")\n        except Exception as e:\n            ErrorHandler.handle_error(e, context=\"TestContext\")\n        # No assertion needed, just ensure no crash\n\nif __name__ == \"__main__\":\n    unittest.main()\n",
+  "src\\core\\execution_controller.py": "from src.core.logger import Logger\nfrom src.core.error_handler import ErrorHandler\nfrom src.integration.broker_manager import BrokerManager\nfrom src.core.order_manager import OrderManager\nfrom src.core.backtest_engine import BacktestEngine\nfrom src.ai.optimizer import AIOptimizer\nfrom src.core.persistence import Persistence\nfrom src.core.emergency_stop import EmergencyStop\nimport backtrader as bt\nimport os\n\nEXECUTION_MODE = os.environ.get('EXECUTION_MODE', 'backtest').lower()\n\nclass ExecutionController:\n    def __init__(self, config, broker):\n        self.config = config\n        self.broker = broker\n        self.order_manager = OrderManager(broker)\n        self.ai_optimizer = AIOptimizer(config)\n        Persistence.init_db()\n\n    def run(self):\n        if not self.broker.check_capabilities():\n            Logger.error(\"[CAPABILITY] Required broker capabilities missing. Execution aborted.\")\n            return\n        if EmergencyStop().is_active():\n            Logger.error('[EMERGENCY STOP] All execution cycles halted. Trading is disabled.')\n            return\n        mode = self.config.get(\"mode\", EXECUTION_MODE)\n        Logger.info(f\"Starting execution in mode: {mode}\")\n        try:\n            if mode == \"backtest\":\n                self.run_backtest()\n            elif mode == \"live\":\n                self.run_live()\n            else:\n                Logger.error(f\"Unknown mode: {mode}\")\n        except Exception as e:\n            ErrorHandler.handle_error(e, context=f\"ExecutionController.run (mode={mode})\")\n\n    def run_backtest(self):\n        Logger.info(\"Running backtest with Backtrader\")\n        try:\n            data = bt.feeds.YahooFinanceData(dataname='AAPL', fromdate=None, todate=None)\n            engine = BacktestEngine(self.config)\n            params = {\"param1\": 1}\n            optimized_params = self.ai_optimizer.optimize(params)\n            result = engine.run(data)\n            Persistence.save_backtest_result(self.config.get('strategy', 'sample_strategy'), result)\n        except Exception as e:\n            ErrorHandler.handle_error(e, context=\"ExecutionController.run_backtest\")\n\n    def run_live(self):\n        if not self.broker.is_connected():\n            Logger.error(\"Broker not connected!\")\n            return\n        Logger.info(\"Running live trading\")\n        try:\n            order = {\"symbol\": \"AAPL\", \"qty\": 1, \"side\": \"buy\"}\n            self.order_manager.place_order(order)\n        except Exception as e:\n            ErrorHandler.handle_error(e, context=\"ExecutionController.run_live\")\n",
+  "src\\core\\risk_engine.py": "from src.core.logger import Logger\nimport os\n\nEXECUTION_MODE = os.environ.get('EXECUTION_MODE', 'backtest').lower()\n\nclass RiskEngine:\n    def __init__(self, config):\n        self.config = config\n\n    def check_risk(self, order):\n        Logger.info(\"Checking risk (to be implemented)\")\n        if EXECUTION_MODE in ['integration', 'live']:\n            raise NotImplementedError(\"Risk checks not implemented for integration/live mode.\")\n        # TODO: Implement risk checks\n        return True\n",
+  "tests\\__init__.py": "",
+  "main.py": "import sys\nimport os\n# Ensure both project root and src are on sys.path\nproject_root = os.path.dirname(os.path.abspath(__file__))\nsrc_path = os.path.join(project_root, 'src')\nif project_root not in sys.path:\n    sys.path.insert(0, project_root)\nif src_path not in sys.path:\n    sys.path.insert(0, src_path)\nimport bootstrap\n\nfrom src.ui.cli_wizard import run_cli_wizard\nfrom src.core.config_manager import ConfigManager\nfrom src.integration.broker_manager import BrokerManager\nfrom src.core.execution_controller import ExecutionController\nfrom src.core.logger import Logger\nfrom src.core.persistence import Persistence\n\n\ndef main():\n    Logger.init()\n    config = ConfigManager.load_or_create()\n    run_cli_wizard(config)\n    broker = BrokerManager(config)\n    execution_controller = ExecutionController(config, broker)\n    execution_controller.run()\n\nif __name__ == \"__main__\":\n    main()\n    input(\"Press Enter to exit...\")\n",
+  "src\\data\\watchlist_manager.py": "import os\nimport json\nfrom src.core.logger import Logger\nfrom src.integration.gdrive_watchlist_sync import GDriveWatchlistSync\n\nWATCHLIST_PATH = os.path.expanduser(\"~/.defihuddle_watchlist.json\")\n\nclass WatchlistManager:\n    @staticmethod\n    def load():\n        if os.path.exists(WATCHLIST_PATH):\n            with open(WATCHLIST_PATH, 'r') as f:\n                return json.load(f)\n        return []\n\n    @staticmethod\n    def save(watchlist):\n        with open(WATCHLIST_PATH, 'w') as f:\n            json.dump(watchlist, f, indent=4)\n        Logger.info(\"Watchlist saved.\")\n        # Sync with Google Drive (stub)\n        config = {}\n        GDriveWatchlistSync(config).sync(watchlist)\n\n    @staticmethod\n    def review_and_flag_symbols(volume_threshold=10000, price_days=5, broker_error_symbols=None):\n        \"\"\"\n        Review symbols for low volume, zero price movement, or broker errors. Flag and disable as needed.\n        \"\"\"\n        watchlist = WatchlistManager.load()\n        flagged = []\n        for symbol in watchlist:\n            # Assume symbol is a dict with keys: symbol, avg_volume, price_history, status\n            if symbol.get('status') == 'disabled':\n                continue\n            if symbol.get('avg_volume', 0) < volume_threshold:\n                symbol['status'] = 'disabled'\n                symbol['flag_reason'] = 'low_volume'\n                flagged.append(symbol['symbol'])\n            elif all(p == symbol['price_history'][-1] for p in symbol.get('price_history', [])[-price_days:]):\n                symbol['status'] = 'disabled'\n                symbol['flag_reason'] = 'zero_movement'\n                flagged.append(symbol['symbol'])\n            elif broker_error_symbols and symbol['symbol'] in broker_error_symbols:\n                symbol['status'] = 'disabled'\n                symbol['flag_reason'] = 'broker_error'\n                flagged.append(symbol['symbol'])\n        WatchlistManager.save(watchlist)\n        Logger.info(f\"Flagged symbols: {flagged}\")\n        return flagged\n\n    @staticmethod\n    def reactivate_symbol(symbol_name):\n        watchlist = WatchlistManager.load()\n        for symbol in watchlist:\n            if symbol['symbol'] == symbol_name and symbol.get('status') == 'disabled':\n                symbol['status'] = 'active'\n                symbol.pop('flag_reason', None)\n                Logger.info(f\"Symbol {symbol_name} reactivated.\")\n        WatchlistManager.save(watchlist)\n",
+  "src\\__init__.py": "",
+  "tests\\run_ibkr_tests.py": "import unittest\nimport sys\nimport os\n\n# Ensure the parent directory is in sys.path for imports\nsys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))\n\n# Import test cases in the desired logical order\nfrom tests.test_broker_manager import TestBrokerManager\nfrom tests.test_order_manager import TestOrderManager\nfrom tests.test_execution_controller import TestExecutionController\n\n\ndef suite():\n    suite = unittest.TestSuite()\n    loader = unittest.TestLoader()\n    # Add tests in logical order\n    suite.addTests(loader.loadTestsFromTestCase(TestBrokerManager))\n    suite.addTests(loader.loadTestsFromTestCase(TestOrderManager))\n    suite.addTests(loader.loadTestsFromTestCase(TestExecutionController))\n    return suite\n\nif __name__ == \"__main__\":\n    runner = unittest.TextTestRunner(verbosity=2)\n    runner.run(suite())\n",
+  "src\\strategies\\sma_crossover.py": "import backtrader as bt\n\nclass Strategy(bt.Strategy):\n    params = dict(fast=10, slow=30)\n    def __init__(self):\n        self.sma_fast = bt.ind.SMA(period=self.p.fast)\n        self.sma_slow = bt.ind.SMA(period=self.p.slow)\n    def next(self):\n        if not self.position and self.sma_fast > self.sma_slow:\n            self.buy(size=1)\n        elif self.position and self.sma_fast < self.sma_slow:\n            self.sell(size=1)\n",
+  "tests\\test_watchlist_manager.py": "import os\nimport sys\n# Ensure both project root and src are on sys.path\nsys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))\nsys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))\nimport bootstrap\nimport unittest\nfrom src.data.watchlist_manager import WatchlistManager\nimport json\nimport pytest\nfrom src.data.watchlist_manager import WatchlistManager, WATCHLIST_PATH\n\n@pytest.fixture(autouse=True)\ndef cleanup():\n    if os.path.exists(WATCHLIST_PATH):\n        os.remove(WATCHLIST_PATH)\n    yield\n    if os.path.exists(WATCHLIST_PATH):\n        os.remove(WATCHLIST_PATH)\n\nclass TestWatchlistManager(unittest.TestCase):\n    def test_load_and_save(self):\n        test_watchlist = ['AAPL', 'GOOG']\n        WatchlistManager.save(test_watchlist)\n        loaded = WatchlistManager.load()\n        self.assertEqual(loaded, test_watchlist)\n        os.remove(os.path.expanduser(\"~/.defihuddle_watchlist.json\"))\n\n    def test_review_and_flag_symbols_low_volume(self):\n        watchlist = [\n            {'symbol': 'AAA', 'avg_volume': 9000, 'price_history': [1,2,3,4,5], 'status': 'active'},\n            {'symbol': 'BBB', 'avg_volume': 20000, 'price_history': [1,1,1,1,1], 'status': 'active'},\n            {'symbol': 'CCC', 'avg_volume': 15000, 'price_history': [1,2,3,4,5], 'status': 'active'},\n        ]\n        with open(WATCHLIST_PATH, 'w') as f:\n            json.dump(watchlist, f)\n        flagged = WatchlistManager.review_and_flag_symbols(volume_threshold=10000)\n        assert 'AAA' in flagged\n        loaded = WatchlistManager.load()\n        assert any(s['symbol'] == 'AAA' and s['status'] == 'disabled' for s in loaded)\n\n    def test_review_and_flag_symbols_zero_movement(self):\n        watchlist = [\n            {'symbol': 'ZZZ', 'avg_volume': 20000, 'price_history': [2,2,2,2,2], 'status': 'active'},\n        ]\n        with open(WATCHLIST_PATH, 'w') as f:\n            json.dump(watchlist, f)\n        flagged = WatchlistManager.review_and_flag_symbols(price_days=5)\n        assert 'ZZZ' in flagged\n        loaded = WatchlistManager.load()\n        assert any(s['symbol'] == 'ZZZ' and s['status'] == 'disabled' for s in loaded)\n\n    def test_review_and_flag_symbols_broker_error(self):\n        watchlist = [\n            {'symbol': 'ERR', 'avg_volume': 20000, 'price_history': [1,2,3,4,5], 'status': 'active'},\n        ]\n        with open(WATCHLIST_PATH, 'w') as f:\n            json.dump(watchlist, f)\n        flagged = WatchlistManager.review_and_flag_symbols(broker_error_symbols=['ERR'])\n        assert 'ERR' in flagged\n        loaded = WatchlistManager.load()\n        assert any(s['symbol'] == 'ERR' and s['status'] == 'disabled' for s in loaded)\n\n    def test_reactivate_symbol(self):\n        watchlist = [\n            {'symbol': 'AAA', 'avg_volume': 9000, 'price_history': [1,2,3,4,5], 'status': 'disabled', 'flag_reason': 'low_volume'},\n        ]\n        with open(WATCHLIST_PATH, 'w') as f:\n            json.dump(watchlist, f)\n        WatchlistManager.reactivate_symbol('AAA')\n        loaded = WatchlistManager.load()\n        assert any(s['symbol'] == 'AAA' and s['status'] == 'active' for s in loaded)\n\nif __name__ == \"__main__\":\n    unittest.main()\n",
+  "src\\data\\trade_journal.py": "import os\nimport json\nimport csv\nfrom datetime import datetime\nfrom src.core.logger import Logger\n\nTRADE_JOURNAL_JSON = os.path.expanduser(\"~/.defihuddle_trade_journal.json\")\nTRADE_JOURNAL_CSV = os.path.expanduser(\"~/.defihuddle_trade_journal.csv\")\n\nclass TradeJournal:\n    @staticmethod\n    def log_trade(entry):\n        # Ensure required fields\n        entry.setdefault('entry_timestamp', datetime.utcnow().isoformat() + 'Z')\n        entry.setdefault('exit_timestamp', None)\n        entry.setdefault('entry_score', None)\n        entry.setdefault('signal_rationale', None)\n        entry.setdefault('exit_reason', None)\n        entry.setdefault('screenshots', [])\n        entry.setdefault('performance', {})\n        # Append to JSON\n        if not os.path.exists(TRADE_JOURNAL_JSON):\n            with open(TRADE_JOURNAL_JSON, 'w') as f:\n                json.dump([entry], f, indent=4)\n        else:\n            with open(TRADE_JOURNAL_JSON, 'r+') as f:\n                data = json.load(f)\n                data.append(entry)\n                f.seek(0)\n                json.dump(data, f, indent=4)\n        # Append to CSV\n        TradeJournal._append_csv(entry)\n        Logger.info(f\"Trade journal entry logged for symbol: {entry.get('symbol')}\")\n\n    @staticmethod\n    def _append_csv(entry):\n        fieldnames = [\n            'symbol', 'entry_timestamp', 'exit_timestamp', 'entry_score', 'signal_rationale',\n            'exit_reason', 'screenshots', 'pnl', 'drawdown', 'slippage'\n        ]\n        file_exists = os.path.exists(TRADE_JOURNAL_CSV)\n        with open(TRADE_JOURNAL_CSV, 'a', newline='') as csvfile:\n            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)\n            if not file_exists:\n                writer.writeheader()\n            row = {\n                'symbol': entry.get('symbol'),\n                'entry_timestamp': entry.get('entry_timestamp'),\n                'exit_timestamp': entry.get('exit_timestamp'),\n                'entry_score': entry.get('entry_score'),\n                'signal_rationale': entry.get('signal_rationale'),\n                'exit_reason': entry.get('exit_reason'),\n                'screenshots': ';'.join(entry.get('screenshots', [])),\n                'pnl': entry.get('performance', {}).get('pnl'),\n                'drawdown': entry.get('performance', {}).get('drawdown'),\n                'slippage': entry.get('performance', {}).get('slippage'),\n            }\n            writer.writerow(row)\n"
+}
+
+EXPECTED OUTPUT STRUCTURE:
+
+Please generate THREE JSON files with the following exact structure:
+
+1. requirements.json:
+{
+  "application_name": "string",
+  "version": "string",
+  "description": "string",
+  "expected_workflows": {
+    "workflow_id": {
+      "name": "string",
+      "description": "string",
+      "trigger_text": "string",
+      "input_action": "string",
+      "expected_next_screen": "string",
+      "expected_text_contains": ["string"],
+      "expected_text_not_contains": ["string"],
+      "success_indicators": ["string"],
+      "failure_indicators": ["string"],
+      "timeout_seconds": number
+    }
+  },
+  "screen_definitions": {
+    "screen_id": {
+      "name": "string",
+      "description": "string",
+      "identifying_text": ["string"],
+      "available_actions": ["string"],
+      "next_screens": ["string"]
+    }
+  },
+  "critical_requirements": [
+    {
+      "requirement_id": "string",
+      "description": "string",
+      "validation_criteria": ["string"],
+      "failure_consequences": "string"
+    }
+  ]
+}
+
+2. validation_rules.json:
+{
+  "screen_progressions": {
+    "from_screen": {
+      "action_input": {
+        "expected_to_screen": "string",
+        "max_wait_seconds": number,
+        "success_if_contains": ["string"],
+        "failure_if_contains": ["string"],
+        "critical_if_no_progression": true
+      }
+    }
+  },
+  "error_classifications": {
+    "CRITICAL": [
+      "workflow_progression_failure",
+      "requirements_violation",
+      "infinite_loop_detected",
+      "expected_screen_not_reached"
+    ],
+    "WARNING": [
+      "unexpected_text_content",
+      "slow_response_time",
+      "minor_ui_variation"
+    ],
+    "INFO": [
+      "input_method_fallback",
+      "retry_success",
+      "normal_operation"
+    ]
+  },
+  "validation_timeouts": {
+    "screen_change_timeout": 10,
+    "input_processing_timeout": 5,
+    "critical_action_timeout": 30
+  }
+}
+
+3. test_scenarios.json:
+{
+  "test_scenarios": [
+    {
+      "scenario_id": "string",
+      "name": "string",
+      "description": "string",
+      "priority": "CRITICAL|HIGH|MEDIUM|LOW",
+      "steps": [
+        {
+          "step_number": number,
+          "description": "string",
+          "action": "wait_for_trigger|send_input|verify_screen",
+          "parameters": {
+            "trigger_text": "string",
+            "input_value": "string",
+            "expected_screen": "string",
+            "timeout": number
+          },
+          "success_criteria": ["string"],
+          "failure_criteria": ["string"]
+        }
+      ],
+      "overall_success_criteria": ["string"],
+      "critical_failure_indicators": ["string"]
+    }
+  ]
+}
+
+ANALYSIS INSTRUCTIONS:
+1. Focus on REQUIREMENTS-DRIVEN validation, not code-driven behavior
+2. Define clear screen progression expectations
+3. Identify what constitutes workflow progression failure vs. normal operation
+4. Create specific, measurable validation criteria
+5. Classify all possible error types appropriately
+6. Ensure test scenarios cover critical user workflows
+7. Make all timeouts and expectations realistic for production use
+
+Based on the ExtP analysis context provided above, please generate these three JSON files with comprehensive, production-ready requirements validation rules.
+
+=== END REQUEST ===

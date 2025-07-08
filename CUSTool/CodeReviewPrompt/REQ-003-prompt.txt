@@ -1,0 +1,8 @@
+Prompt for REQ-003: CUS shall differentiate between configuration success and configuration bypass
+
+Review all code in ExtP that handles configuration completion. For each place where the code does not:
+- Clearly distinguish between a successful configuration and a bypass (skipped, failed, or incomplete)
+- Log the outcome and reason
+- Trigger the correct CUS response for each case
+
+Update the code to ensure this logic is explicit and add tests if missing.

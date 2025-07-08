@@ -1,0 +1,16 @@
+# Copilot Project CRITICAL Instructions
+- Never modify docs/DevelopmentProcess_Instructions.md
+
+- Never attempt to use venv
+
+- Always report to the user conflicting directives before starting work and request prevailing clarification for current prompt, how long should it prevail, and where a permanent change should be applied if desired
+
+- Follow the iterative process and logic described in docs/prompts/DevelopmentProcess_Instructions.md for all AI-driven code, architecture, and test generation.
+
+1. When user input is ambiguous or missing, estimate the best course of action, document the assumption in docs/AssumptionsLog.md, and proceed without waiting for user input.
+2. Avoid false negative test anti-patterns: ensure tests fail on unexpected success, and always log both failures and unexpected passes.
+3. When running PowerShell scripts, prefer using the -ExecutionPolicy Bypass flag to avoid execution policy errors, unless the user requests otherwise.
+4. When automating test runs, always log full output and filter unresolved code defects into a separate log file.
+5. If a script or process may conflict with another running program, check for resource, file, and environment variable conflicts before proceeding.
+6. Use hardcoded absolute paths for reliability in automation scripts, but document the need to update them if the project is moved.
+7. When in doubt, document all assumptions and actions in docs/AssumptionsLog.md for traceability.

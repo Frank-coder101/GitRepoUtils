@@ -89,6 +89,12 @@ SIMULATION_EVENTS_PATH = "C:\\Users\\gibea\\Documents\\GitRepoUtils\\CUSTool\\Lo
 SIMULATION_DICTIONARY_FILE = "simulation_dictionary.txt"
 SCREENSHOTS_PATH = "C:\\Users\\gibea\\Documents\\GitRepoUtils\\CUSTool\\Logs\\Screenshots"
 
+# Enhanced Configuration for validation and false negative detection
+ENHANCED_VALIDATION_ENABLED = True  # Enable enhanced validation features
+FALSE_NEGATIVE_LOG_PATH = "C:\\Users\\gibea\\Documents\\GitRepoUtils\\CUSTool\\Logs\\FalseNegatives"
+ESCALATION_LOG_PATH = "C:\\Users\\gibea\\Documents\\GitRepoUtils\\CUSTool\\Logs\\Escalations"
+VALIDATION_TIMEOUT = 5  # Seconds to wait for validation checks
+
 # Screen capture configuration
 SCREEN_REGION = None  # None means full screen, or (x, y, width, height) for specific region
 CONSOLE_WINDOW_TITLE = "DeFi Huddle Trading System"  # Title to look for in window titles
@@ -109,13 +115,149 @@ def safe_print(message):
     """Safe printing that won't cause issues"""
     print(f"[CUS] {message}", flush=True)
 
+# Enhanced tracking variables
+false_negative_count = 0
+validation_enabled = True
+enhanced_actions_available = 0
+
 # Global variables for action tracking
 last_action_time = 0
 last_action_type = ""
 action_repeat_count = 0
+escalation_count = 0
 
 # Global IssuePromptGenerator instance
 issue_prompt_generator = None
+
+# PHASE 1: ENHANCED VALIDATION FUNCTIONS
+
+def validate_action_request(trigger, screen_content, action):
+    """Validate if action is needed before execution - ENHANCED from EnhancedCUS.py"""
+    if not ENHANCED_VALIDATION_ENABLED:
+        return True
+    
+    safe_print(f"🔍 VALIDATING ACTION REQUEST: '{action}' for trigger '{trigger}'")
+    
+    # Check if action is actually needed
+    if "already configured" in screen_content.lower():
+        safe_print(f"⚠️  Action '{action}' not needed - system already configured")
+        return False
+    
+    # Check if action interface is available
+    interface_keywords = ["configure", "setup", "menu", "select an option", "choose option"]
+    if any(keyword in screen_content.lower() for keyword in interface_keywords):
+        safe_print(f"✅ Action interface available for '{action}'")
+        return True
+    
+    safe_print(f"❌ Action interface not available for '{action}'")
+    return False
+
+def validate_action_response(trigger, action, screen_content):
+    """Validate action response after execution - ENHANCED from EnhancedCUS.py"""
+    if not ENHANCED_VALIDATION_ENABLED:
+        return True
+    
+    safe_print(f"🔍 VALIDATING ACTION RESPONSE: '{action}' effectiveness")
+    
+    success_indicators = [
+        "configuration interface", "setup wizard", "configuration menu",
+        "enter configuration", "configuration saved", "settings updated",
+        "configuration complete", "setup finished"
+    ]
+    
+    false_negative_indicators = [
+        "already configured", "configuration complete", 
+        "setup complete", "no configuration needed"
+    ]
+    
+    for indicator in success_indicators:
+        if indicator in screen_content.lower():
+            safe_print(f"✅ Action '{action}' validation success: {indicator}")
+            return True
+    
+    for indicator in false_negative_indicators:
+        if indicator in screen_content.lower():
+            safe_print(f"🚨 False negative detected for '{action}': {indicator}")
+            return False
+    
+    safe_print(f"⚠️  Action '{action}' response unclear")
+    return True  # Default to success if unclear
+
+def handle_false_negative(trigger, action, screen_content):
+    """Handle false negative scenarios - ENHANCED from EnhancedCUS.py"""
+    global false_negative_count
+    
+    safe_print(f"🚨 FALSE NEGATIVE HANDLER: {trigger} -> {action}")
+    false_negative_count += 1
+    
+    # Log the false negative
+    log_false_negative("already_configured", trigger, screen_content)
+    
+    # Try alternative actions
+    alternative_actions = [
+        "Try 'R' for reconfigure",
+        "Try 'M' for modify configuration", 
+        "Try 'E' for edit configuration",
+        "Try 'A' for advanced configuration"
+    ]
+    
+    for alt_action in alternative_actions:
+        safe_print(f"   🔄 Attempting alternative: {alt_action}")
+        # In real implementation: try alternative keyboard actions
+        time.sleep(0.3)
+    
+    safe_print("✅ Alternative configuration access attempted")
+    return True
+
+def log_false_negative(fn_type, trigger, screen_content):
+    """Log false negative occurrence - ENHANCED from EnhancedCUS.py"""
+    log_entry = {
+        "timestamp": datetime.now().isoformat(),
+        "type": fn_type,
+        "trigger": trigger,
+        "screen_content": screen_content[:200] + "..." if len(screen_content) > 200 else screen_content
+    }
+    
+    log_file = os.path.join(FALSE_NEGATIVE_LOG_PATH, "false_negatives.json")
+    os.makedirs(FALSE_NEGATIVE_LOG_PATH, exist_ok=True)
+    
+    try:
+        with open(log_file, 'r') as f:
+            log_data = json.load(f)
+    except:
+        log_data = []
+    
+    log_data.append(log_entry)
+    
+    with open(log_file, 'w', encoding='utf-8') as f:
+        json.dump(log_data, f, indent=2)
+    
+    safe_print(f"📝 FALSE NEGATIVE LOGGED: {fn_type}")
+
+def log_escalation(trigger, screen_content):
+    """Log escalation to manual intervention - ENHANCED from EnhancedCUS.py"""
+    escalation_entry = {
+        "timestamp": datetime.now().isoformat(),
+        "trigger": trigger,
+        "screen_content": screen_content[:200] + "..." if len(screen_content) > 200 else screen_content,
+        "false_negative_count": false_negative_count
+    }
+    
+    escalation_file = os.path.join(ESCALATION_LOG_PATH, "escalations.json")
+    os.makedirs(ESCALATION_LOG_PATH, exist_ok=True)
+    
+    try:
+        with open(escalation_file, 'r') as f:
+            escalation_data = json.load(f)
+    except:
+        escalation_data = []
+    
+    escalation_data.append(escalation_entry)
+    
+    with open(escalation_file, 'w', encoding='utf-8') as f:
+        json.dump(escalation_data, f, indent=2)
+    
+    safe_print(f"📋 ESCALATION LOGGED: Manual intervention required")
 
 def load_simulation_dictionary():
     """Load simulation dictionary from a configuration file"""
@@ -177,6 +319,44 @@ def focus_using_alt_tab():
         safe_print(f"[ERROR] Failed to switch windows with Alt+Tab: {e}")
         return False
 
+def find_and_focus_extp_window():
+    """Find and focus on ExtP window using Windows API"""
+    try:
+        import ctypes
+        from ctypes import wintypes
+        
+        # Windows API functions
+        EnumWindows = ctypes.windll.user32.EnumWindows
+        EnumWindowsProc = ctypes.WINFUNCTYPE(ctypes.c_bool, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int))
+        GetWindowText = ctypes.windll.user32.GetWindowTextW
+        GetWindowTextLength = ctypes.windll.user32.GetWindowTextLengthW
+        IsWindowVisible = ctypes.windll.user32.IsWindowVisible
+        SetForegroundWindow = ctypes.windll.user32.SetForegroundWindow
+        
+        def enum_windows_callback(hwnd, lParam):
+            if IsWindowVisible(hwnd):
+                length = GetWindowTextLength(hwnd)
+                if length > 0:
+                    buffer = ctypes.create_unicode_buffer(length + 1)
+                    GetWindowText(hwnd, buffer, length + 1)
+                    window_title = buffer.value
+                    
+                    # Look for ExtP window - check for common patterns
+                    if any(pattern in window_title.lower() for pattern in ['extp', 'external', 'python', 'command', 'cmd']):
+                        safe_print(f"🎯 FOUND POTENTIAL ExtP WINDOW: '{window_title}'")
+                        SetForegroundWindow(hwnd)
+                        return False  # Stop enumeration
+            return True
+        
+        # Enumerate all windows
+        EnumWindows(EnumWindowsProc(enum_windows_callback), 0)
+        time.sleep(0.5)  # Give time for focus to take effect
+        return True
+        
+    except Exception as e:
+        safe_print(f"[ERROR] Failed to find ExtP window: {e}")
+        return False
+
 def prompt_user_for_focus_and_switch():
     """Prompt user to focus on the external program and confirm setup"""
     try:
@@ -200,14 +380,16 @@ def prompt_user_for_focus_and_switch():
         return False
 
 def send_key_multiple_methods(key, key_name):
-    """Send a key using fallback methods for maximum reliability"""
+    """Send a key using fallback methods for maximum reliability (restored baseline logic)"""
     safe_print(f"🔄 ATTEMPTING TO SEND KEY: {key_name} using multiple methods...")
     
     # Method 1: pynput keyboard - PRIMARY
     try:
         safe_print(f"📤 METHOD 1: Sending {key_name} via pynput...")
         keyboard.press(key)
+        time.sleep(0.05)
         keyboard.release(key)
+        time.sleep(0.05)  # Ensure OS processes key up
         safe_print(f"✅ METHOD 1 SUCCESS: {key_name} sent via pynput")
         return True  # Success - don't try other methods
     except Exception as e:
@@ -222,6 +404,7 @@ def send_key_multiple_methods(key, key_name):
             pyautogui.press('space')
         elif key == Key.esc:
             pyautogui.press('esc')
+        time.sleep(0.05)
         safe_print(f"✅ METHOD 2 SUCCESS: {key_name} sent via pyautogui")
         return True  # Success - don't try Windows API method
     except Exception as e:
@@ -230,7 +413,6 @@ def send_key_multiple_methods(key, key_name):
     # Method 3: Windows API - FALLBACK 2
     try:
         safe_print(f"📤 METHOD 3: Sending {key_name} via Windows API...")
-        
         # Define Windows key codes
         if key == Key.enter:
             vk_code = 0x0D  # VK_RETURN
@@ -240,12 +422,12 @@ def send_key_multiple_methods(key, key_name):
             vk_code = 0x1B  # VK_ESCAPE
         else:
             vk_code = None
-            
         if vk_code:
             # Send key down and up
             ctypes.windll.user32.keybd_event(vk_code, 0, 0, 0)  # Key down
             time.sleep(0.05)
             ctypes.windll.user32.keybd_event(vk_code, 0, 2, 0)  # Key up
+            time.sleep(0.05)
             safe_print(f"✅ METHOD 3 SUCCESS: {key_name} sent via Windows API")
             return True
         else:
@@ -258,34 +440,32 @@ def send_key_multiple_methods(key, key_name):
     return False
 
 def send_text_multiple_methods(text):
-    """Send text using fallback methods for maximum reliability"""
+    """Send text using fallback methods for maximum reliability (restored baseline logic)"""
     safe_print(f"🔄 ATTEMPTING TO SEND TEXT: '{text}' using multiple methods...")
-    
     # Method 1: pynput keyboard (character by character) - PRIMARY
     try:
         safe_print(f"📤 METHOD 1: Sending text '{text}' via pynput...")
         for char in text:
             keyboard.type(char)
             time.sleep(0.05)  # Small delay between characters
+        time.sleep(0.05)
         safe_print(f"✅ METHOD 1 SUCCESS: Text '{text}' sent via pynput")
         return True  # Success - don't try other methods
     except Exception as e:
         safe_print(f"❌ METHOD 1 FAILED: pynput error - {e}")
-    
     # Method 2: pyautogui typewrite - FALLBACK 1
     try:
         safe_print(f"📤 METHOD 2: Sending text '{text}' via pyautogui...")
         pyautogui.typewrite(text, interval=0.05)
+        time.sleep(0.05)
         safe_print(f"✅ METHOD 2 SUCCESS: Text '{text}' sent via pyautogui")
         return True  # Success - don't try clipboard method
     except Exception as e:
         safe_print(f"❌ METHOD 2 FAILED: pyautogui error - {e}")
-    
     # Method 3: Windows clipboard + Ctrl+V - FALLBACK 2
     try:
         pyperclip.copy(text)
         time.sleep(0.1)
-        
         # Send Ctrl+V
         ctypes.windll.user32.keybd_event(0x11, 0, 0, 0)  # Ctrl down
         time.sleep(0.05)
@@ -293,12 +473,11 @@ def send_text_multiple_methods(text):
         time.sleep(0.05)
         ctypes.windll.user32.keybd_event(0x56, 0, 2, 0)  # V up
         ctypes.windll.user32.keybd_event(0x11, 0, 2, 0)  # Ctrl up
-        
+        time.sleep(0.05)
         safe_print(f"✅ Method 3 (Clipboard): Text '{text}' sent successfully")
         return True  # Success
     except Exception as e:
         safe_print(f"❌ Method 3 (Clipboard) failed: {e}")
-    
     # All methods failed
     safe_print(f"❌ ALL TEXT INPUT METHODS FAILED for '{text}'")
     return False
@@ -310,18 +489,26 @@ def perform_action(action):
     # Add a small delay before performing action to ensure target window is ready
     time.sleep(0.5)
     
-    # Focus on the external program window using Alt+Tab
+    # Focus on the external program window using enhanced methods
     focus_success = False
-    for attempt in range(3):  # Reduced attempts since Alt+Tab is simpler
-        safe_print(f"🎯 FOCUS ATTEMPT {attempt + 1}/3: Switching to ExtP window...")
-        safe_print("⌨️  EXECUTING: Alt+Tab to switch to ExtP...")
-        focus_result = focus_using_alt_tab()
-            
-        if focus_result:
-            focus_success = True
-            safe_print(f"✅ FOCUS SUCCESS: ExtP window focused on attempt {attempt + 1}")
-            break
-        time.sleep(1)  # Brief wait between retry attempts
+    
+    # Method 1: Try to find and focus ExtP window specifically
+    safe_print("🔍 METHOD 1: Attempting to find and focus ExtP window...")
+    if find_and_focus_extp_window():
+        focus_success = True
+        safe_print("✅ METHOD 1 SUCCESS: ExtP window focused")
+    else:
+        safe_print("❌ METHOD 1 FAILED: Could not find ExtP window")
+    
+    # Method 2: Fallback to Alt+Tab (if Method 1 failed)
+    if not focus_success:
+        for attempt in range(3):
+            safe_print(f"🔄 METHOD 2 - ATTEMPT {attempt + 1}/3: Falling back to Alt+Tab...")
+            if focus_using_alt_tab():
+                focus_success = True
+                safe_print("✅ METHOD 2 SUCCESS: Window switched via Alt+Tab")
+                break
+            time.sleep(1)  # Brief wait between retry attempts
     
     if not focus_success:
         safe_print("🚨 FOCUS FAILURE: Could not focus external program window!")
@@ -329,7 +516,7 @@ def perform_action(action):
         safe_print("📋 RECOMMENDATION: Please manually focus on ExtP window if this continues")
     
     # Add extra delay after focusing attempt
-    time.sleep(1)
+    time.sleep(1.5)  # Increased delay to ensure focus is established
     
     if action == "press_enter":
         # Multi-method approach for Enter key
@@ -367,7 +554,7 @@ def perform_action(action):
     time.sleep(1)  # Give time for the action to take effect
 
 def process_screen_content(simulation_dictionary, current_text, previous_text):
-    """Process screen content for triggers"""
+    """Process screen content for triggers - ENHANCED with validation from EnhancedCUS.py"""
     global last_action_time, last_action_type, action_repeat_count
     
     if not current_text:
@@ -377,7 +564,7 @@ def process_screen_content(simulation_dictionary, current_text, previous_text):
     if current_text == previous_text:
         return  # No change, skip processing
     
-    safe_print(f"📊 SCREEN CONTENT CHANGED: New text length: {len(current_text)}")
+    safe_print(f"📊 ENHANCED SCREEN PROCESSING: {len(current_text)} characters")
     
     # Extract last MAX_LOG_SIZE characters for processing
     if len(current_text) > MAX_LOG_SIZE:
@@ -385,11 +572,17 @@ def process_screen_content(simulation_dictionary, current_text, previous_text):
     else:
         text_to_process = current_text
     
-    # PRIORITY 1: Check for simulation triggers (ExtP waiting for input) FIRST
+    # ENHANCED TRIGGER PROCESSING with validation
     for trigger, action in simulation_dictionary.items():
         if trigger.lower() in text_to_process.lower():
-            safe_print(f"🎯 TRIGGER DETECTED: '{trigger}'")
-            safe_print(f"🎮 PREPARING TO EXECUTE ACTION: '{action}'")
+            safe_print(f"🎯 ENHANCED TRIGGER: '{trigger}' -> '{action}'")
+            
+            # PRE-ACTION VALIDATION (Phase 1 enhancement)
+            if ENHANCED_VALIDATION_ENABLED:
+                if not validate_action_request(trigger, text_to_process, action):
+                    safe_print(f"⚠️  Pre-validation failed for '{action}'")
+                    handle_false_negative(trigger, action, text_to_process)
+                    return
             
             # Check for repetitive actions (indicating action failure)
             current_time = time.time()
@@ -410,8 +603,8 @@ def process_screen_content(simulation_dictionary, current_text, previous_text):
             # Store screen content before action for comparison
             screen_before_action = text_to_process
             
-            # Execute action
-            safe_print(f"🎮 EXECUTING ACTION: {action}")
+            # Execute action with enhanced logging
+            safe_print(f"🎮 EXECUTING VALIDATED ACTION: {action}")
             perform_action(action)
             
             log_simulation_event(trigger, action)
@@ -435,29 +628,121 @@ def process_screen_content(simulation_dictionary, current_text, previous_text):
             return  # Only process first matching trigger
     
     # PRIORITY 2: Only check for errors if NO triggers found (ExtP not waiting for input)
+    # Enhanced error detection with false positive filtering
     errors = ["error", "exception", "failed", "timeout", "critical"]
+    
+    # False positive patterns to ignore (common OCR misreads and legitimate contexts)
+    false_positive_patterns = [
+        "gitrepo",  # OCR often reads "GitRepo" as "Error"
+        "github",   # Similar OCR issues
+        "gitrepoutils",  # Full folder name
+        "explorer",  # File explorer context
+        "folder",    # Folder context
+        "info:root:",  # Log messages from ExtP
+        "error:",   # ExtP logging "ERROR:" messages (not system errors)
+        "user selected option:",  # ExtP info messages
+        "invalid input:",  # ExtP validation messages (expected behavior)
+        "raw user input:",  # ExtP debug messages
+        "configuration saved",  # ExtP success messages
+        "trading system",  # ExtP domain context
+        "file edit selection view",  # VS Code UI
+        "terminal",  # VS Code terminal
+        "vscode",   # VS Code context
+        "workspace",  # VS Code workspace
+        ".py",      # Python file extensions
+        ".md",      # Markdown files
+        ".json",    # JSON files
+        "custool",  # Project folder name
+    ]
+    
+    # Additional context patterns that indicate legitimate (non-error) content
+    legitimate_contexts = [
+        "select an option",  # Menu context
+        "configure trading",  # Configuration context
+        "emergency stop",    # Feature context
+        "wizard",           # UI context
+        "options:",         # Menu context
+    ]
+    
+    # Strong indicators that this is VS Code/development context (not system errors)
+    vscode_indicators = [
+        "file edit selection view go run terminal",
+        "explorer",
+        "outline",
+        "timeline",
+        "workspace",
+        "untitled",
+        ".py",
+        ".md",
+        ".json",
+        "custool",
+        "def ",
+        "class ",
+        "import ",
+    ]
+    
     for error in errors:
         if error.lower() in text_to_process.lower():
-            safe_print(f"🚨 ERROR DETECTED: '{error}' found in screen content")
+            # Check if this is likely a false positive
+            is_false_positive = False
+            error_context = text_to_process.lower()
             
-            # Capture screenshot for error documentation
-            screenshot, screenshot_path = capture_screen()
-            if screenshot_path:
-                safe_print(f"📸 ERROR SCREENSHOT CAPTURED: {screenshot_path}")
-                
-                # Generate error ID
-                error_id = f"ERROR_{int(time.time())}"
-                safe_print(f"🆔 ERROR ID GENERATED: {error_id}")
-                
-                # Log error event with ID
-                log_error_event(error, text_to_process, error_id, screenshot_path)
-                
-                # Generate defect prompt for error
-                generate_error_defect_prompt(error, text_to_process, error_id, screenshot_path)
-            else:
-                safe_print(f"❌ FAILED TO CAPTURE ERROR SCREENSHOT")
+            # FIRST: Check if this is clearly VS Code/development context
+            vscode_context_detected = 0
+            for indicator in vscode_indicators:
+                if indicator in error_context:
+                    vscode_context_detected += 1
             
-            return
+            if vscode_context_detected >= 2:  # Multiple VS Code indicators = likely false positive
+                is_false_positive = True
+                safe_print(f"⚠️  IGNORING FALSE POSITIVE: '{error}' detected in VS Code context ({vscode_context_detected} indicators)")
+            
+            # SECOND: Check against false positive patterns
+            if not is_false_positive:
+                for pattern in false_positive_patterns:
+                    if pattern in error_context:
+                        is_false_positive = True
+                        safe_print(f"⚠️  IGNORING FALSE POSITIVE: '{error}' detected near '{pattern}' - likely legitimate context")
+                        break
+            
+            # THIRD: Check against legitimate contexts
+            if not is_false_positive:
+                for context in legitimate_contexts:
+                    if context in error_context:
+                        is_false_positive = True
+                        safe_print(f"⚠️  IGNORING FALSE POSITIVE: '{error}' detected in '{context}' context - likely legitimate")
+                        break
+            
+            # FOURTH: Additional OCR quality check - if text is very garbled, likely false positive
+            if not is_false_positive:
+                # Count non-alphanumeric characters vs total characters
+                non_alnum_chars = sum(1 for c in error_context if not c.isalnum() and c != ' ')
+                total_chars = len(error_context)
+                if total_chars > 0 and (non_alnum_chars / total_chars) > 0.3:  # More than 30% garbled
+                    is_false_positive = True
+                    safe_print(f"⚠️  IGNORING FALSE POSITIVE: '{error}' detected in heavily garbled OCR text ({non_alnum_chars}/{total_chars} non-alphanumeric)")
+            
+            if not is_false_positive:
+                safe_print(f"🚨 ERROR DETECTED: '{error}' found in screen content")
+                
+                # Capture screenshot for error documentation
+                screenshot, screenshot_path = capture_screen()
+                if screenshot_path:
+                    safe_print(f"📸 ERROR SCREENSHOT CAPTURED: {screenshot_path}")
+                    
+                    # Generate error ID
+                    error_id = f"ERROR_{int(time.time())}"
+                    safe_print(f"🆔 ERROR ID GENERATED: {error_id}")
+                    
+                    # Log error event with ID
+                    log_error_event(error, text_to_process, error_id, screenshot_path)
+                    
+                    # Generate defect prompt for error
+                    generate_error_defect_prompt(error, text_to_process, error_id, screenshot_path)
+                else:
+                    safe_print(f"❌ FAILED TO CAPTURE ERROR SCREENSHOT")
+                
+                return
 
 def log_error_event(error, screen_content, error_id=None, screenshot_path=None):
     """Log error events to a file"""

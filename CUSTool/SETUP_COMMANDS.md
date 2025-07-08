@@ -18,8 +18,8 @@ if (!(Test-Path "NewEvents")) { New-Item -ItemType Directory -Path "NewEvents" }
 
 ### 3. Install Required Python Packages
 ```powershell
-& "C:\Program Files\Python313\python.exe" -m pip install --upgrade pip
-& "C:\Program Files\Python313\python.exe" -m pip install -r requirements.txt
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
 ```
 
 ### 4. Create Sample Simulation Dictionary (if not exists)
@@ -44,7 +44,7 @@ if (!(Test-Path "Logs\output.log")) {
 
 ### 6. Run Unit Tests
 ```powershell
-& "C:\Program Files\Python313\python.exe" -m pytest test_CUS.py -v | Out-File -FilePath "Logs\test_results.log" -Encoding UTF8
+python -m pytest test_CUS.py -v | Out-File -FilePath "Logs\test_results.log" -Encoding UTF8
 ```
 
 ### 7. Check Test Results
@@ -54,37 +54,32 @@ Get-Content "Logs\test_results.log"
 
 ### 8. Check for Syntax Errors
 ```powershell
-& "C:\Program Files\Python313\python.exe" -m py_compile CUS.py
+python -m py_compile CUS.py
 ```
 
 ### 9. Run CUS.py
 ```powershell
-& "C:\Program Files\Python313\python.exe" CUS.py
-```
-
-## Alternative: Run the Complete Setup Script
-```powershell
-.\setup_and_run_complete.bat
+python CUS.py
 ```
 
 ## Manual Installation Commands (if pip fails)
 ```powershell
-& "C:\Program Files\Python313\python.exe" -m pip install pynput==1.7.6
-& "C:\Program Files\Python313\python.exe" -m pip install watchdog==3.0.0
-& "C:\Program Files\Python313\python.exe" -m pip install pytest==7.0.0
-& "C:\Program Files\Python313\python.exe" -m pip install mock==4.0.3
+python -m pip install pynput==1.7.6
+python -m pip install watchdog==3.0.0
+python -m pip install pytest==7.0.0
+python -m pip install mock==4.0.3
 ```
 
 ## Troubleshooting Commands
 ```powershell
 # Check Python version
-& "C:\Program Files\Python313\python.exe" --version
+python --version
 
 # Check installed packages
-& "C:\Program Files\Python313\python.exe" -m pip list
+python -m pip list
 
 # Check if modules can be imported
-& "C:\Program Files\Python313\python.exe" -c "import pynput; import watchdog; import pytest; print('All modules imported successfully')"
+python -c "import pynput; import watchdog; import pytest; print('All modules imported successfully')"
 ```
 
 ## File Structure Verification

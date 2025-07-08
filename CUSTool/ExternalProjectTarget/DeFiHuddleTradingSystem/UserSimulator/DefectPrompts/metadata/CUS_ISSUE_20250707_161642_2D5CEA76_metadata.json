@@ -1,0 +1,44 @@
+{
+  "issue_id": "CUS_ISSUE_20250707_161642_2D5CEA76",
+  "timestamp": "2025-07-07T16:16:42.495481",
+  "test_run_id": "TESTRUN_20250707_161441_5F58DE35",
+  "severity": "Warning",
+  "failure_type": "Validation_Failure",
+  "test_case_name": "Action Ineffectiveness",
+  "test_sequence_id": "INEFFECTIVE_ACTION_1751926602",
+  "failure_step": 1,
+  "screenshots": [
+    {
+      "screenshot_id": "CUS_ISSUE_20250707_161642_2D5CEA76_failure_1751926602",
+      "file_path": "C:\\Users\\gibea\\Documents\\GitRepos\\DeFiHuddleTradingSystem\\UserSimulator\\DefectPrompts\\screenshots\\CUS_ISSUE_20250707_161642_2D5CEA76_failure_1751926602.png",
+      "type": "failure",
+      "description": "Screenshot captured at time of test failure"
+    }
+  ],
+  "documentation_references": [
+    {
+      "file_path": "simulation_dictionary.txt",
+      "reference_type": "requirement",
+      "reference_id": "CUS-DICT",
+      "line_number": null,
+      "section_title": "CUS Action Dictionary"
+    }
+  ],
+  "related_test_cases": [
+    "CUS Action Effectiveness Tests"
+  ],
+  "dependency_chain": [
+    "CUS",
+    "ExtP",
+    "Screen Detection"
+  ],
+  "error_details": {
+    "error_type": "ineffective_action",
+    "error_message": "Action 'type_1' did not remove trigger 'Select an option:' from screen",
+    "trigger": "Select an option:",
+    "screen_before": "J File Edit Selection View Go Run Terminal\n\noO SOURCE CONTROL\n\n\\ REPOSITORIES\np GitRepoUtils Git # main OC Y BW SO\n\n\\ CHANGES\nie Y Changes\n\n\u00ae AutomatedRemediationSystem.py CUSToo!\n\nCUS _ExtP_Testing_Guide.md CUSToo!\nCUS.py CUSToo!\ndeploy_production.bat CUSToo!\nEnhancedCUS.py CUSToo!\nEnhancedTestCase",
+    "screen_after": "x) File Edit\n\nSelection\n\nView Go Run Terminal\n\noO SOURCE CONTROL\n\n-v REPOSITORIES\np GitRepoUtils Git # main OC Y BW SO\n\n\\ CHANGES\n\n| ig yom\n\n\u00ae AutomatedRemediationSystem.py CUSToo!\nCUS _ExtP_Testing_Guide.md CUSToo!\nCUS.py CUSToo!\n\ndeploy_production.bat CUSToo!\nEnhancedCUS.py CUSToo!\nEnhancedTestCas",
+    "screenshot_path": "C:\\Users\\gibea\\Documents\\GitRepoUtils\\CUSTool\\Logs\\Screenshots\\screenshot_1751926599.png"
+  },
+  "system_context": {}
+}

@@ -1,0 +1,43 @@
+{
+  "issue_id": "CUS_ISSUE_20250707_204451_B4A7D653",
+  "timestamp": "2025-07-07T20:44:51.455510",
+  "test_run_id": "TESTRUN_20250707_204423_560D32FB",
+  "severity": "Error",
+  "failure_type": "External_Program_Error",
+  "test_case_name": "Error Detection",
+  "test_sequence_id": "ERROR_DETECTION_ERROR_1751942691",
+  "failure_step": 1,
+  "screenshots": [
+    {
+      "screenshot_id": "CUS_ISSUE_20250707_204451_B4A7D653_failure_1751942691",
+      "file_path": "C:\\Users\\gibea\\Documents\\GitRepos\\DeFiHuddleTradingSystem\\UserSimulator\\DefectPrompts\\screenshots\\CUS_ISSUE_20250707_204451_B4A7D653_failure_1751942691.png",
+      "type": "failure",
+      "description": "Screenshot captured at time of test failure"
+    }
+  ],
+  "documentation_references": [
+    {
+      "file_path": "ExtP_ErrorHandling.md",
+      "reference_type": "requirement",
+      "reference_id": "EXTP-ERR",
+      "line_number": null,
+      "section_title": "Error Handling Requirements"
+    }
+  ],
+  "related_test_cases": [
+    "ExtP Error Handling Tests"
+  ],
+  "dependency_chain": [
+    "CUS",
+    "ExtP",
+    "Error Detection"
+  ],
+  "error_details": {
+    "error_type": "external_program_error",
+    "error_message": "Error 'error' detected in screen content",
+    "error_id": "ERROR_1751942691",
+    "screen_content": "iva\n\n\u00ae\n3\n\nBA] & mains S @oAo *1\n\nFile Edit Selection View Go Run Terminal\n\nEXPLORER,\n\n\u00ae CUSpy [] x\n\n@ Advancediestexecutor.py\n Alternative_Test_Anchoring_Concepts.md\n\u00ae AutomatedRemediationSystem.py\n BrainstormDialog2.md\n\n\u00ae CUS _backup.py u\n\u00ae CUS baseline_clean.py\n\u00ae CUS complete_backup.py u\n\n4 CUS _ExtP_Testing Guide.md\n\n\u00ae CUS old_broken.py\n\n\u00ae CUS PreEnhancedMerge.py u\n\u00ae CUS py oO\n4% DDD_Modern_Approach.md\n\ndebug ExtP output.txt\n\n\u00ae EnhancedCUS.py\n\n\u00ae EnhancedTestCaseGenerator.py\nextp_analysis prompt _optimized.txt\nextp_analysis_prompt-txt\n\n\u00a9 ExtP_Indexer.py\n\n{} extp_metadatajson\n\n\u00ae generate_extp_requirements.py\n\n\u00ae IssuePromptGenerator.py\n\n\u00ae method1_comprehensive_validation.py\n{3 method! _validation_reportjson\n\n4 PRODUCTION _READY.md\n\n\u00ae production_status_check.py\n ProductionValidationReport.md\n\n{0 ProductionValidationResultsjson\n\n\u00ae ProductionValidationTest.py\n\n{} prompt_metadatajson\n\n\u00a5 RADAR Methodology.md\n@) README md\n> OUTLINE\n\n> TIMELINE\n\n\u20ac5 P Untitled (Workspace)\n\n\u00ae EnhancedCUS.py\n\n\u00ae ",
+    "screenshot_path": "C:\\Users\\gibea\\Documents\\GitRepoUtils\\CUSTool\\Logs\\Screenshots\\screenshot_1751942691.png"
+  },
+  "system_context": {}
+}
