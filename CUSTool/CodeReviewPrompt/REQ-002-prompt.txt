@@ -1,9 +1,0 @@
-Prompt for REQ-002: CUS shall detect when ExtP shows 'already configured' message
-
-Review all code in ExtP that processes or displays configuration status. For each place where the code does not:
-- Detect the 'already configured' message reliably
-- Distinguish between initial configuration and already-configured states
-- Trigger the correct CUS response for this message
-- Log the detection and response
-
-Update the code to meet this requirement and add tests if missing.

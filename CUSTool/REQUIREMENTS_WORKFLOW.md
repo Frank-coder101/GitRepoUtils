@@ -12,7 +12,7 @@ This workflow generates requirements validation rules for CUS (CLI User Simulato
 
 ### 1. Generate Analysis Prompt
 ```bash
-python generate_extp_requirements.py "C:\Path\To\ExtP" --output-prompt "analysis_prompt.txt"
+python generate_extp_requirements.py ExternalProjectTarget\DeFiHuddleTradingSystem --requirements-file ExternalProjectTarget\DeFiHuddleTradingSystem\docs\Project_Requirements.md --exclude-patterns tests/ UserSimulator/ __pycache__/ retrospectives/ --llm gpt-4-1106-preview
 ```
 
 **Optional parameters:**
@@ -48,6 +48,18 @@ def validate_screen_progression(current_screen, action, next_screen):
         return "CRITICAL: Workflow progression failure"
     return "SUCCESS"
 ```
+
+#### Implementation Note: Requirements-Driven Validation and Defect Prompt Integration
+
+After integrating the requirements, validation rules, and test scenarios as described above, the CUS system now performs requirements-driven validation of workflow progression in the main monitoring loop. Specifically:
+
+- After each simulated action, CUS compares the screen content before and after the action (using OCR) to determine the actual transition.
+- The function `validate_screen_progression(current_screen, action, next_screen)` is called with the before/after screen content and the action performed. This checks the transition against the loaded validation rules.
+- If a workflow progression failure is detected (i.e., the transition does not match the requirements), this is now included in the error context passed to the `IssuePromptGenerator`.
+- The defect prompt generated for the failure (saved in `UserSimulator/DefectPrompts`) is augmented with details about the requirements-driven validation failure, including the expected and actual screens, the action, and the specific rule violated.
+- No separate output is created for requirements validation failures; instead, the existing defect prompt/reporting system is made more accurate and requirements-aware.
+
+This ensures that all workflow progression failures are traceable to requirements and validation rules, and that defect prompts provide actionable, requirements-driven feedback for remediation.
 
 ## Expected Output Structure
 

@@ -1,9 +1,0 @@
-Prompt for REQ-001: CUS shall correctly respond to ExtP configuration menu prompts
-
-Review all code in ExtP that handles configuration menu prompts. For each place where the code does not:
-- Detect all possible configuration menu prompts
-- Correctly map prompts to the expected CUS response
-- Handle edge cases (unexpected menu text, missing options)
-- Log the detected prompt and the simulated response
-
-Please update the code to ensure full requirements coverage. Add tests if missing.

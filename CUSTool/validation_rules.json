@@ -1,0 +1,55 @@
+{
+  "screen_progressions": {
+    "wizard_entry": {
+      "1": {
+        "expected_to_screen": "Configuration Menu",
+        "max_wait_seconds": 10,
+        "success_if_contains": [
+          "Configure trading system",
+          "Trading system is already configured."
+        ],
+        "failure_if_contains": [
+          "Invalid input",
+          "out of range"
+        ],
+        "critical_if_no_progression": true
+      }
+    },
+    "Configuration Menu": {
+      "exit": {
+        "expected_to_screen": "wizard_entry",
+        "max_wait_seconds": 5,
+        "success_if_contains": [
+          "Options:"
+        ],
+        "failure_if_contains": [
+          "Error"
+        ],
+        "critical_if_no_progression": false
+      }
+    }
+  },
+  "error_classifications": {
+    "CRITICAL": [
+      "workflow_progression_failure",
+      "requirements_violation",
+      "infinite_loop_detected",
+      "expected_screen_not_reached"
+    ],
+    "WARNING": [
+      "unexpected_text_content",
+      "slow_response_time",
+      "minor_ui_variation"
+    ],
+    "INFO": [
+      "input_method_fallback",
+      "retry_success",
+      "normal_operation"
+    ]
+  },
+  "validation_timeouts": {
+    "screen_change_timeout": 10,
+    "input_processing_timeout": 5,
+    "critical_action_timeout": 30
+  }
+}

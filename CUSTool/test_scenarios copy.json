@@ -1,0 +1,54 @@
+{
+  "test_scenarios": [
+    {
+      "scenario_id": "SCN-001",
+      "name": "First Time Onboarding and Configuration",
+      "description": "Tests complete flow for configuring system on first launch via CLI wizard.",
+      "priority": "CRITICAL",
+      "steps": [
+        {
+          "step_number": 1,
+          "description": "Wait for CLI welcome wizard to appear",
+          "action": "wait_for_trigger",
+          "parameters": {
+            "trigger_text": "Welcome to DeFi Huddle Trading System Setup Wizard!",
+            "input_value": "",
+            "expected_screen": "wizard_entry",
+            "timeout": 10
+          },
+          "success_criteria": [
+            "Welcome screen detected"
+          ],
+          "failure_criteria": [
+            "Welcome text not found"
+          ]
+        },
+        {
+          "step_number": 2,
+          "description": "Select option 1 to configure trading system",
+          "action": "send_input",
+          "parameters": {
+            "trigger_text": "Options:",
+            "input_value": "1",
+            "expected_screen": "Configuration Menu",
+            "timeout": 5
+          },
+          "success_criteria": [
+            "Configuration saved."
+          ],
+          "failure_criteria": [
+            "Invalid input",
+            "Error"
+          ]
+        }
+      ],
+      "overall_success_criteria": [
+        "Trading system configured and saved"
+      ],
+      "critical_failure_indicators": [
+        "workflow_progression_failure",
+        "expected_screen_not_reached"
+      ]
+    }
+  ]
+}

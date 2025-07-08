@@ -10,6 +10,8 @@ import glob
 from datetime import datetime
 import argparse
 from pathlib import Path
+import time
+import fnmatch
 
 class ExtPRequirementsGenerator:
     def __init__(self, exclude_patterns=None):
@@ -17,7 +19,34 @@ class ExtPRequirementsGenerator:
         self.max_file_size = 1024 * 5  # 5KB per file to stay under limits
         self.total_context_limit = 1024 * 20  # 20KB total to be safe
         self.exclude_patterns = exclude_patterns or []
-        
+        self.gitignore_patterns = self._load_gitignore_patterns()
+
+    def _load_gitignore_patterns(self):
+        gitignore_path = os.path.join(os.path.dirname(__file__), ".gitignore")
+        patterns = []
+        if os.path.exists(gitignore_path):
+            with open(gitignore_path, "r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if not line or line.startswith("#"):  # skip comments/empty
+                        continue
+                    if line.startswith("!"):  # skip negation for now
+                        continue
+                    patterns.append(line)
+        return patterns
+
+    def _is_ignored(self, rel_path):
+        # Check exclude_patterns
+        for pat in self.exclude_patterns:
+            if pat.lower().rstrip("/") in rel_path.lower():
+                return True
+        # Check .gitignore patterns
+        for pat in self.gitignore_patterns:
+            # Use fnmatch for glob-like patterns
+            if fnmatch.fnmatch(rel_path, pat) or fnmatch.fnmatch(rel_path.replace("\\", "/"), pat):
+                return True
+        return False
+
     def discover_requirements_sources(self, extp_path, requirements_file=None, requirements_folder=None):
         """Discover all requirements sources"""
         print(f"[DEBUG] Discovering requirements sources in: {extp_path}")
@@ -114,30 +143,46 @@ class ExtPRequirementsGenerator:
         except Exception as e:
             return f"[ERROR READING FILE: {e}]"
     
-    def generate_directory_structure(self, extp_path, max_depth=2):
-        """Generate a compact directory structure view for the ExtP target directory only"""
-        print(f"[DEBUG] Scanning directory structure at: {extp_path}")
+    def generate_directory_structure(self, extp_path, max_depth=None):
+        """Generate a full directory structure view for the ExtP target directory, including every file."""
+        # Allow max_depth override via environment variable or argument
+        if max_depth is None:
+            max_depth = int(os.environ.get("EXT_P_DIRSTRUCT_MAX_DEPTH", 10))  # default to 10 for deep scan
+        print(f"[DEBUG] Scanning directory structure at: {extp_path} (max_depth={max_depth})")
         structure = {}
         
         def scan_dir(path, current_depth):
             if current_depth > max_depth:
-                return {}
-            
+                print(f"[DEBUG] Reached max depth at: {path}")
+                return {"_omitted": "max depth reached"}
+            rel_path = os.path.relpath(path, extp_path).replace("\\", "/")
+            if rel_path != "." and self._is_ignored(rel_path):
+                print(f"[DEBUG] Excluding directory by .gitignore or exclude_patterns: {rel_path}")
+                return {"_omitted": "excluded by pattern"}
             items = {}
             try:
-                for item in sorted(os.listdir(path))[:8]:  # Limit items per directory
+                for item in sorted(os.listdir(path)):
                     if item.startswith('.'):
+                        print(f"[DEBUG] Skipping hidden file/dir: {os.path.join(path, item)}")
                         continue
-                    
                     item_path = os.path.join(path, item)
+                    rel_item_path = os.path.relpath(item_path, extp_path).replace("\\", "/")
+                    if self._is_ignored(rel_item_path):
+                        print(f"[DEBUG] Excluding file/dir by .gitignore or exclude_patterns: {rel_item_path}")
+                        continue
                     if os.path.isdir(item_path):
+                        print(f"[DEBUG] Directory: {item_path}/")
                         items[f"{item}/"] = scan_dir(item_path, current_depth + 1)
                     else:
                         size = os.path.getsize(item_path)
+                        print(f"[DEBUG] File: {item_path} ({size} bytes)")
                         items[item] = f"{size} bytes"
             except PermissionError:
+                print(f"[DEBUG] Permission denied: {path}")
                 items["error"] = "Permission denied"
-            
+            except Exception as e:
+                print(f"[DEBUG] Error reading {path}: {e}")
+                items["error"] = str(e)
             return items
         
         return scan_dir(extp_path, 0)
@@ -445,9 +490,28 @@ If this is part 1 of a multi-part prompt, the next part will be in a file named 
 
     def generate_multi_part_prompts(self, extp_path, requirements_file=None, requirements_folder=None, output_dir=None, base_filename="copilot_analysis_prompt.txt"):
         """Generate multi-part prompts with semantic chunking for large requirements files"""
+        # Create a unique subfolder for each execution using timestamp
+        unique_run_id = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
         if output_dir is None:
-            output_dir = os.path.join(os.getcwd(), "ExternalProjectPrompts")
+            base_output_dir = os.path.join(os.getcwd(), "ExternalProjectPrompts")
+        else:
+            base_output_dir = output_dir
+        output_dir = os.path.join(base_output_dir, f"copilot_run_{unique_run_id}")
         os.makedirs(output_dir, exist_ok=True)
+        print(f"[INFO] Writing all copilot_analysis_prompt*.txt files to unique subfolder: {output_dir}")
+
+        print(f"[EXPLICIT DEBUG] extp_path argument received: {extp_path}")
+        if not os.path.exists(extp_path):
+            print(f"[EXPLICIT DEBUG] ERROR: extp_path does not exist: {extp_path}")
+        else:
+            print(f"[EXPLICIT DEBUG] extp_path exists and is a directory: {os.path.isdir(extp_path)}")
+
+        # Always dynamically generate the directory structure
+        directory_structure = self.generate_directory_structure(extp_path)
+        print("[EXPLICIT DEBUG] Full directory structure as JSON:")
+        print(json.dumps(directory_structure, indent=2))
+        print("\n[DEVELOPER VALIDATION] Full ExtP directory structure (tree):")
+        self.print_full_directory_structure(extp_path)
 
         # Discover requirements sources
         requirements_sources = self.discover_requirements_sources(
@@ -455,12 +519,6 @@ If this is part 1 of a multi-part prompt, the next part will be in a file named 
         )
         # Scan codebase
         important_files = self.scan_extp_codebase(extp_path)
-        # Generate directory structure
-        directory_structure = self.generate_directory_structure(extp_path)
-
-        # Print full directory structure for developer validation
-        print("\n[DEVELOPER VALIDATION] Full ExtP directory structure:")
-        self.print_full_directory_structure(extp_path)
 
         # Batch requirements sources with semantic chunking for markdown
         req_batches = []
@@ -486,7 +544,16 @@ If this is part 1 of a multi-part prompt, the next part will be in a file named 
                     if chunk_len > self.max_file_size:
                         chunked_files.append(chunk_id)
                     included_files.append(chunk_id)
-                    # ...existing code...
+                    req_batch[chunk_id] = chunk_meta
+                    req_batch_size += chunk_len
+                    if req_batch_size > self.total_context_limit:
+                        req_batches.append(req_batch)
+                        req_batch = {}
+                        req_batch_size = 0
+                if req_batch:
+                    req_batches.append(req_batch)
+                    req_batch = {}
+                    req_batch_size = 0
             else:
                 # Non-markdown: treat as a single chunk, but truncate if too large
                 content = self.read_file_safely(filepath)
@@ -495,7 +562,20 @@ If this is part 1 of a multi-part prompt, the next part will be in a file named 
                 if content_len > self.max_file_size:
                     chunked_files.append(rel_path)
                 included_files.append(rel_path)
-                # ...existing code...
+                req_batch[rel_path] = {
+                    "source_type": source_type,
+                    "chunk_index": 1,
+                    "total_chunks": 1,
+                    "content": content
+                }
+                req_batch_size += content_len
+                if req_batch_size > self.total_context_limit:
+                    req_batches.append(req_batch)
+                    req_batch = {}
+                    req_batch_size = 0
+        if req_batch:
+            req_batches.append(req_batch)
+
         # Now batch code files (unchanged for now, but can add chunking for code later)
         code_file_batches = []
         code_batch = {}
@@ -542,6 +622,7 @@ If this is part 1 of a multi-part prompt, the next part will be in a file named 
                         "is_multi_part": is_multi_part,
                         "total_parts": len(interleaved_batches)
                     },
+                    # Always include the up-to-date directory structure in the first file
                     "directory_structure": directory_structure if part_number == 1 else {},
                     "requirements_sources": batch,
                     "code_files": {},
@@ -549,6 +630,8 @@ If this is part 1 of a multi-part prompt, the next part will be in a file named 
                     "summary": summary
                 }
                 if part_number == 1:
+                    print("[EXPLICIT DEBUG] DIRECTORY STRUCTURE being written to prompt file:")
+                    print(json.dumps(context_data["directory_structure"], indent=2))
                     prompt = self._build_prompt_template(context_data)
                     filename = base_filename
                 else:

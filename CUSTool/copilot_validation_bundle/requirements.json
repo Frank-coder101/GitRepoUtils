@@ -1,0 +1,107 @@
+{
+  "application_name": "DeFiHuddleTradingSystem",
+  "version": "1.0.0",
+  "description": "Requirements-driven validation model for CLI User Simulator (CUS) to validate onboarding, trading mode transitions, and critical workflows in DeFiHuddleTradingSystem.",
+  "expected_workflows": {
+    "onboarding": {
+      "name": "Initial Setup and Configuration",
+      "description": "User launches CLI wizard and configures trading system for first time use.",
+      "trigger_text": "Welcome to DeFi Huddle Trading System Setup Wizard!",
+      "input_action": "1",
+      "expected_next_screen": "Configuration Menu",
+      "expected_text_contains": [
+        "Configure trading system",
+        "Exit wizard"
+      ],
+      "expected_text_not_contains": [
+        "Live mode active",
+        "Error"
+      ],
+      "success_indicators": [
+        "Trading system is already configured."
+      ],
+      "failure_indicators": [
+        "Invalid input",
+        "Invalid option"
+      ],
+      "timeout_seconds": 10
+    },
+    "mode_selection": {
+      "name": "Trading Mode Activation",
+      "description": "User selects BackTesting or Live mode from CLI menu.",
+      "trigger_text": "Options:",
+      "input_action": "1",
+      "expected_next_screen": "Configuration Menu",
+      "expected_text_contains": [
+        "Enter total funds",
+        "Enter broker type"
+      ],
+      "expected_text_not_contains": [
+        "Emergency stop"
+      ],
+      "success_indicators": [
+        "Configuration saved.",
+        "CLI wizard completed."
+      ],
+      "failure_indicators": [
+        "Invalid input",
+        "out of range"
+      ],
+      "timeout_seconds": 10
+    }
+  },
+  "screen_definitions": {
+    "wizard_entry": {
+      "name": "Welcome Screen",
+      "description": "Initial CLI wizard welcome message and menu.",
+      "identifying_text": [
+        "Welcome to DeFi Huddle Trading System Setup Wizard!"
+      ],
+      "available_actions": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "next_screens": [
+        "Configuration Menu",
+        "Emergency Stop Status"
+      ]
+    },
+    "Configuration Menu": {
+      "name": "Trading System Configuration",
+      "description": "Inputs for funds, broker account, and saves to config.",
+      "identifying_text": [
+        "Enter total funds",
+        "Enter broker type"
+      ],
+      "available_actions": [
+        "exit"
+      ],
+      "next_screens": [
+        "wizard_entry"
+      ]
+    }
+  },
+  "critical_requirements": [
+    {
+      "requirement_id": "REQ-1.1.2",
+      "description": "System must automate all complex trading operations with only essential user input.",
+      "validation_criteria": [
+        "Successful configuration with minimal fields",
+        "No need to manually edit config files"
+      ],
+      "failure_consequences": "User unable to proceed without technical intervention; violates onboarding goals"
+    },
+    {
+      "requirement_id": "REQ-5.2.1",
+      "description": "Live mode must require explicit user confirmation with liability acceptance.",
+      "validation_criteria": [
+        "UI must display confirmation dialog",
+        "Confirmation must be logged with timestamp and user identity"
+      ],
+      "failure_consequences": "Risk of unauthorized live trading; potential legal exposure"
+    }
+  ]
+}

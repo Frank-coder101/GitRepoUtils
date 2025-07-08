@@ -305,15 +305,16 @@ def extract_text_from_image(image):
         return ""
 
 def focus_using_alt_tab():
-    """Focus on the external program window using Alt+Tab"""
+    """Focus on the external program window using Alt+Tab (pynput explicit keypress/release)"""
     try:
-        # Use Alt+Tab to switch to the next window - correct pynput syntax
+        safe_print("[DEBUG] Calling Alt+Tab focus switch (pynput explicit)...")
         keyboard.press(Key.alt)
         keyboard.press(Key.tab)
         time.sleep(0.1)  # Brief hold
         keyboard.release(Key.tab)
         keyboard.release(Key.alt)
         time.sleep(0.5)  # Brief pause for window switch
+        safe_print("[DEBUG] Alt+Tab released, waiting 0.5 second for focus to settle...")
         return True
     except Exception as e:
         safe_print(f"[ERROR] Failed to switch windows with Alt+Tab: {e}")
@@ -381,15 +382,15 @@ def prompt_user_for_focus_and_switch():
 
 def send_key_multiple_methods(key, key_name):
     """Send a key using fallback methods for maximum reliability (restored baseline logic)"""
-    safe_print(f"🔄 ATTEMPTING TO SEND KEY: {key_name} using multiple methods...")
-    
+    safe_print(f"[DEBUG] Preparing to send key: {key_name}")
     # Method 1: pynput keyboard - PRIMARY
     try:
         safe_print(f"📤 METHOD 1: Sending {key_name} via pynput...")
         keyboard.press(key)
         time.sleep(0.05)
         keyboard.release(key)
-        time.sleep(0.05)  # Ensure OS processes key up
+        time.sleep(0.05)
+        safe_print(f"[DEBUG] Sent {key_name} via pynput")
         safe_print(f"✅ METHOD 1 SUCCESS: {key_name} sent via pynput")
         return True  # Success - don't try other methods
     except Exception as e:
@@ -405,6 +406,7 @@ def send_key_multiple_methods(key, key_name):
         elif key == Key.esc:
             pyautogui.press('esc')
         time.sleep(0.05)
+        safe_print(f"[DEBUG] Sent {key_name} via pyautogui")
         safe_print(f"✅ METHOD 2 SUCCESS: {key_name} sent via pyautogui")
         return True  # Success - don't try Windows API method
     except Exception as e:
@@ -423,11 +425,11 @@ def send_key_multiple_methods(key, key_name):
         else:
             vk_code = None
         if vk_code:
-            # Send key down and up
             ctypes.windll.user32.keybd_event(vk_code, 0, 0, 0)  # Key down
             time.sleep(0.05)
             ctypes.windll.user32.keybd_event(vk_code, 0, 2, 0)  # Key up
             time.sleep(0.05)
+            safe_print(f"[DEBUG] Sent {key_name} via Windows API")
             safe_print(f"✅ METHOD 3 SUCCESS: {key_name} sent via Windows API")
             return True
         else:
@@ -435,7 +437,6 @@ def send_key_multiple_methods(key, key_name):
             return False
     except Exception as e:
         safe_print(f"❌ METHOD 3 FAILED: Windows API error - {e}")
-    
     safe_print(f"🚨 ALL METHODS FAILED: Could not send {key_name}")
     return False
 
@@ -483,69 +484,45 @@ def send_text_multiple_methods(text):
     return False
 
 def perform_action(action):
-    """Perform the specified action with multiple input methods for reliability"""
-    safe_print(f"🎮 STARTING ACTION: {action}")
-    
-    # Add a small delay before performing action to ensure target window is ready
+    """Perform the specified action with multiple input methods for reliability (Alt+Tab focus)"""
+    safe_print(f"\U0001F3AE STARTING ACTION: {action}")
     time.sleep(0.5)
-    
-    # Focus on the external program window using enhanced methods
     focus_success = False
-    
-    # Method 1: Try to find and focus ExtP window specifically
-    safe_print("🔍 METHOD 1: Attempting to find and focus ExtP window...")
-    if find_and_focus_extp_window():
-        focus_success = True
-        safe_print("✅ METHOD 1 SUCCESS: ExtP window focused")
-    else:
-        safe_print("❌ METHOD 1 FAILED: Could not find ExtP window")
-    
-    # Method 2: Fallback to Alt+Tab (if Method 1 failed)
+    for attempt in range(3):
+        safe_print(f"\U0001F3AF FOCUS ATTEMPT {attempt + 1}/3: Switching to ExtP window via Alt+Tab...")
+        if focus_using_alt_tab():
+            focus_success = True
+            safe_print(f"\u2705 FOCUS SUCCESS: ExtP window focused on attempt {attempt + 1}")
+            break
+        time.sleep(1)
     if not focus_success:
-        for attempt in range(3):
-            safe_print(f"🔄 METHOD 2 - ATTEMPT {attempt + 1}/3: Falling back to Alt+Tab...")
-            if focus_using_alt_tab():
-                focus_success = True
-                safe_print("✅ METHOD 2 SUCCESS: Window switched via Alt+Tab")
-                break
-            time.sleep(1)  # Brief wait between retry attempts
-    
-    if not focus_success:
-        safe_print("🚨 FOCUS FAILURE: Could not focus external program window!")
-        safe_print("⚠️  WARNING: Keys will be sent to whatever window is currently active")
-        safe_print("📋 RECOMMENDATION: Please manually focus on ExtP window if this continues")
-    
-    # Add extra delay after focusing attempt
-    time.sleep(1.5)  # Increased delay to ensure focus is established
-    
+        safe_print("\U0001F6A8 FOCUS FAILURE: Could not focus external program window!")
+        safe_print("\u26A0\uFE0F  WARNING: Keys will be sent to whatever window is currently active")
+        safe_print("\U0001F4CB RECOMMENDATION: Please manually focus on ExtP window if this continues")
+    time.sleep(1)
     if action == "press_enter":
-        # Multi-method approach for Enter key
-        safe_print("⌨️  SENDING INPUT: Enter key")
+        safe_print("\u2328\uFE0F  SENDING INPUT: Enter key")
         send_key_multiple_methods(Key.enter, "Enter")
     elif action == "press_space":
-        safe_print("⌨️  SENDING INPUT: Space key")
+        safe_print("\u2328\uFE0F  SENDING INPUT: Space key")
         send_key_multiple_methods(Key.space, "Space")
     elif action == "press_escape":
-        safe_print("⌨️  SENDING INPUT: Escape key")
+        safe_print("\u2328\uFE0F  SENDING INPUT: Escape key")
         send_key_multiple_methods(Key.esc, "Escape")
     elif action.startswith("type_"):
-        text = action[5:]  # Extract text after "type_"
-        safe_print(f"⌨️  SENDING INPUT: Typing '{text}' followed by Enter")
-        safe_print(f"📝 INPUT DETAILS: Text='{text}', Length={len(text)} characters")
-        
-        # Multi-method approach for typing
+        text = action[5:]
+        safe_print(f"\u2328\uFE0F  SENDING INPUT: Typing '{text}' followed by Enter")
+        safe_print(f"\U0001F4DD INPUT DETAILS: Text='{text}', Length={len(text)} characters")
         send_text_multiple_methods(text)
-        
-        # Press Enter after typing using multiple methods
         time.sleep(0.5)
-        safe_print("⌨️  SENDING INPUT: Enter key (after typing)")
+        safe_print("\u2328\uFE0F  SENDING INPUT: Enter key (after typing)")
         send_key_multiple_methods(Key.enter, "Enter")
-        safe_print(f"✅ INPUT COMPLETE: Successfully sent '{text}' + Enter")
+        safe_print(f"\u2705 INPUT COMPLETE: Successfully sent '{text}' + Enter")
     elif action == "wait_random":
         wait_time = random.randint(1, 5)
-        safe_print(f"⏳ WAITING: {wait_time} seconds (random delay)")
+        safe_print(f"\u23F3 WAITING: {wait_time} seconds (random delay)")
         time.sleep(wait_time)
-        safe_print(f"✅ WAIT COMPLETE: Waited {wait_time} seconds")
+        safe_print(f"\u2705 WAIT COMPLETE: Waited {wait_time} seconds")
     else:
         safe_print(f"❌ UNKNOWN ACTION: {action}")
     
@@ -622,6 +599,52 @@ def process_screen_content(simulation_dictionary, current_text, previous_text):
                         generate_ineffective_action_prompt(trigger, action, screen_before_action, screen_after_action, screenshot_path_after)
                     else:
                         safe_print(f"✅ ACTION APPEARS EFFECTIVE: Trigger '{trigger}' no longer present")
+                    # --- Requirements-driven screen progression validation ---
+                    progression_result = None
+                    if validation_rules_data:
+                        progression_result = validate_screen_progression(
+                            screen_before_action, action, screen_after_action, validation_rules_data
+                        )
+                        if progression_result != "SUCCESS":
+                            safe_print(f"🚨 REQUIREMENTS VALIDATION FAILURE: {progression_result}")
+                            # Augment error context for defect prompt
+                            if issue_prompt_generator:
+                                from IssuePromptGenerator import TestCaseContext, DocumentationReference
+                                test_context = TestCaseContext(
+                                    test_case_name="Workflow Progression Failure",
+                                    test_sequence_id=f"PROGRESSION_FAILURE_{int(time.time())}",
+                                    expected_behavior=f"Action '{action}' should transition from '{screen_before_action[:40]}...' to expected screen",
+                                    actual_behavior=f"Transitioned to '{screen_after_action[:40]}...' instead.",
+                                    failure_step=1,
+                                    reproduction_steps=[
+                                        f"Screen before: {screen_before_action[:40]}...",
+                                        f"Action: {action}",
+                                        f"Screen after: {screen_after_action[:40]}..."
+                                    ],
+                                    documentation_refs=[
+                                        DocumentationReference(
+                                            file_path="validation_rules.json",
+                                            reference_type="requirement",
+                                            reference_id="CUS-REQ-VALIDATION",
+                                            section_title="Screen Progression Rules"
+                                        )
+                                    ],
+                                    related_test_cases=["CUS Requirements-Driven Validation"],
+                                    dependency_chain=["CUS", "ExtP", "Screen Progression"]
+                                )
+                                error_context = {
+                                    "error_type": "requirements_validation_failure",
+                                    "error_message": progression_result,
+                                    "current_screen": screen_before_action[:100],
+                                    "action": action,
+                                    "next_screen": screen_after_action[:100]
+                                }
+                                prompt_obj = issue_prompt_generator.generate_issue_prompt(
+                                    test_case_context=test_context,
+                                    error_context=error_context
+                                )
+                                saved_path = issue_prompt_generator.save_issue_prompt(prompt_obj)
+                                safe_print(f"💾 DEFECT PROMPT (REQUIREMENTS) SAVED: {prompt_obj.issue_id} at {saved_path}")
                 else:
                     safe_print(f"❌ OCR FAILED ON POST-ACTION SCREENSHOT: {screenshot_path_after}")
             
@@ -1001,12 +1024,57 @@ def generate_ineffective_action_prompt(trigger, action, screen_before, screen_af
         except Exception as e:
             safe_print(f"❌ ERROR GENERATING INEFFECTIVE ACTION PROMPT: {e}")
 
+def validate_screen_progression(current_screen, action, next_screen, validation_rules):
+    """Validate screen progression using requirements-driven rules."""
+    try:
+        rules = validation_rules.get("screen_progressions", {})
+        expected = rules.get(current_screen, {}).get(action)
+        if expected:
+            expected_next = expected.get("expected_to_screen")
+            if expected_next and next_screen != expected_next:
+                return f"CRITICAL: Workflow progression failure (expected '{expected_next}', got '{next_screen}')"
+        return "SUCCESS"
+    except Exception as e:
+        return f"ERROR: Exception in screen progression validation: {e}"
+
+# === REQUIREMENTS-DRIVEN VALIDATION: LOAD REQUIREMENTS, RULES, AND TEST SCENARIOS ===
+REQUIREMENTS_FILE = "requirements.json"
+VALIDATION_RULES_FILE = "validation_rules.json"
+TEST_SCENARIOS_FILE = "test_scenarios.json"
+
+requirements_data = None
+validation_rules_data = None
+test_scenarios_data = None
+
+def load_json_file(filepath, description):
+    try:
+        with open(filepath, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        safe_print(f"Loaded {description} from {filepath} (items: {len(data) if hasattr(data, '__len__') else 'n/a'})")
+        return data
+    except FileNotFoundError:
+        safe_print(f"[WARNING] {description} file not found: {filepath}")
+    except Exception as e:
+        safe_print(f"[ERROR] Failed to load {description} from {filepath}: {e}")
+    return None
+
+requirements_data = load_json_file(REQUIREMENTS_FILE, "requirements")
+validation_rules_data = load_json_file(VALIDATION_RULES_FILE, "validation rules")
+test_scenarios_data = load_json_file(TEST_SCENARIOS_FILE, "test scenarios")
+
+if requirements_data is None or validation_rules_data is None or test_scenarios_data is None:
+    safe_print("[WARNING] One or more requirements-driven validation files failed to load. Validation may be incomplete.")
+else:
+    safe_print("All requirements-driven validation files loaded successfully.")
+
 def main():
     """Main function to run the CUS system"""
     try:
         print("=== CUS STARTING UP ===", flush=True)
         safe_print("Starting CLI User Simulator with Screen Capture...")
         
+
+
         # Add startup delay as suggested
         safe_print("Initializing... (3 second delay)")
         time.sleep(3)
