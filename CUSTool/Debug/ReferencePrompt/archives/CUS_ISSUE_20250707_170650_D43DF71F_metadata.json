@@ -1,0 +1,44 @@
+{
+  "issue_id": "CUS_ISSUE_20250707_170650_D43DF71F",
+  "timestamp": "2025-07-07T17:06:50.953498",
+  "test_run_id": "TESTRUN_20250707_170558_FA626428",
+  "severity": "Warning",
+  "failure_type": "Validation_Failure",
+  "test_case_name": "Action Ineffectiveness",
+  "test_sequence_id": "INEFFECTIVE_ACTION_1751929610",
+  "failure_step": 1,
+  "screenshots": [
+    {
+      "screenshot_id": "CUS_ISSUE_20250707_170650_D43DF71F_failure_1751929610",
+      "file_path": "C:\\Users\\gibea\\Documents\\GitRepos\\DeFiHuddleTradingSystem\\UserSimulator\\DefectPrompts\\screenshots\\CUS_ISSUE_20250707_170650_D43DF71F_failure_1751929610.png",
+      "type": "failure",
+      "description": "Screenshot captured at time of test failure"
+    }
+  ],
+  "documentation_references": [
+    {
+      "file_path": "simulation_dictionary.txt",
+      "reference_type": "requirement",
+      "reference_id": "CUS-DICT",
+      "line_number": null,
+      "section_title": "CUS Action Dictionary"
+    }
+  ],
+  "related_test_cases": [
+    "CUS Action Effectiveness Tests"
+  ],
+  "dependency_chain": [
+    "CUS",
+    "ExtP",
+    "Screen Detection"
+  ],
+  "error_details": {
+    "error_type": "ineffective_action",
+    "error_message": "Action 'type_1' did not remove trigger 'Select an option:' from screen",
+    "trigger": "Select an option:",
+    "screen_before": "\u00ae\n3\n\nBA & mains S @oAo\n\nFile Edit\n\nSelection View Go Run\n\nEXPLORER,\n\nTerminal\n\n\u00a5 Advanced_UseCase_Discovery_Techniques.md\n\nOLidienantibsticatnm\n\nHelp\n\n\u20ac5- P GitRepoutils\n\n@ CUSpy M \u00a5 CUS_ExtP Testing Guidemd U X\n\n1 # CUS-ExtP Input Simulation Testing Guide\n\nRWN\n\nINFO:root :Python executable: C:\\Prog",
+    "screen_after": "J File Edit Selection View Go Run Terminal Help \u20ac57\n| oO EXPLORER @ CUSpy M \u00a5 CUS_ExtP Testing Guidemd U X\n> OPEN EDITORS\nPD. ~ sirerouris 1 # CUS-ExtP Input Simulation Testing Guide\n\u00a5 CUSTool 2 . .\nfeyanencsilsecsaloe |Techniquesmd A ## A IMPORTANT: Single Terminal Workflow\n%\u00ae tt in\n\n2025-07-07 17:",
+    "screenshot_path": "C:\\Users\\gibea\\Documents\\GitRepoUtils\\CUSTool\\Logs\\Screenshots\\screenshot_1751929608.png"
+  },
+  "system_context": {}
+}

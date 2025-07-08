@@ -1,1 +1,0 @@
-Trigger: Error:\nAction: press_enter\nTimestamp: 1751874558\n

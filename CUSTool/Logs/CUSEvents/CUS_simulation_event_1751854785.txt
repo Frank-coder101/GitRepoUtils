@@ -1,7 +1,0 @@
-Trigger: Options:
-1. Configure trading system
-2. Activate EMERGENCY STOP
-3. Deactivate EMERGENCY STOP
-4. Show EMERGENCY STOP status
-5. Exit wizard
-Select an option:\nAction: type_3\nTimestamp: 1751854785\n

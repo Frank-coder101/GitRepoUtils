@@ -1,7 +1,17 @@
 
+@echo off
+title ExtP - DeFi Huddle Trading System
+echo ================================================
+echo ExtP - DeFi Huddle Trading System
+echo ================================================
+echo.
+
 cd C:\Users\gibea\Documents\GitRepos\DeFiHuddleTradingSystem
 
-python C:\Users\gibea\Documents\GitRepos\DeFiHuddleTradingSystem\main.py --output C:\Users\gibea\Documents\GitRepoUtils\CUSTool\Logs\output.log // C:\Users\gibea\Documents\GitRepoUtils\CUSTool\Logs\output.log 2>&1
+echo Starting ExtP with visible console output...
+python C:\Users\gibea\Documents\GitRepos\DeFiHuddleTradingSystem\main.py
 
+echo.
+echo ExtP execution completed.
 pause
 

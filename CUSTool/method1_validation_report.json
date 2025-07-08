@@ -1,0 +1,78 @@
+{
+  "timestamp": "2025-07-07T15:09:28.872955",
+  "overall_passed": false,
+  "step_results": {
+    "ExtP Startup": false,
+    "CUS Startup": false,
+    "Input Simulation": false,
+    "False Negative Detection": false
+  },
+  "validation_log": [
+    {
+      "timestamp": "2025-07-07T15:09:20.537616",
+      "step": "ExtP Script Check",
+      "result": true,
+      "details": "ExtP startup script found"
+    },
+    {
+      "timestamp": "2025-07-07T15:09:20.543277",
+      "step": "ExtP Launch",
+      "result": true,
+      "details": "ExtP process started"
+    },
+    {
+      "timestamp": "2025-07-07T15:09:25.661869",
+      "step": "ExtP Content Validation",
+      "result": false,
+      "details": "No ExtP indicators found on screen"
+    },
+    {
+      "timestamp": "2025-07-07T15:09:25.667288",
+      "step": "CUS Launch",
+      "result": true,
+      "details": "CUS process started"
+    },
+    {
+      "timestamp": "2025-07-07T15:09:28.668668",
+      "step": "CUS Monitoring",
+      "result": false,
+      "details": "No CUS monitoring activity detected"
+    },
+    {
+      "timestamp": "2025-07-07T15:09:28.765189",
+      "step": "Screen Capture Before",
+      "result": true,
+      "details": "Captured: Error capturing screen: tesseract is not installed or it's not in your PATH. See README file for mor..."
+    },
+    {
+      "timestamp": "2025-07-07T15:09:28.765406",
+      "step": "Trigger Detection",
+      "result": false,
+      "details": "No trigger patterns found"
+    },
+    {
+      "timestamp": "2025-07-07T15:09:28.862626",
+      "step": "False Negative Detection",
+      "result": false,
+      "details": "No false negative patterns found"
+    },
+    {
+      "timestamp": "2025-07-07T15:09:28.870816",
+      "step": "Simulated Defect Prompt",
+      "result": false,
+      "details": "Error simulating defect prompt: TestCaseContext.__init__() got an unexpected keyword argument 'test_id'"
+    },
+    {
+      "timestamp": "2025-07-07T15:09:28.871410",
+      "step": "CUS Cleanup",
+      "result": true,
+      "details": "CUS process terminated"
+    },
+    {
+      "timestamp": "2025-07-07T15:09:28.871648",
+      "step": "ExtP Cleanup",
+      "result": true,
+      "details": "ExtP process terminated"
+    }
+  ]
+}

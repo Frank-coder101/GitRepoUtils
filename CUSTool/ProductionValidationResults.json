@@ -1,0 +1,41 @@
+{
+  "timestamp": "2025-07-07T14:38:55.344027",
+  "validation_status": "READY_WITH_MONITORING",
+  "component_tests": {
+    "details": {
+      "test_generator": 1.0,
+      "test_executor": 1.0,
+      "remediation_system": 1.0,
+      "enhanced_cus": 1.0
+    },
+    "score": 1.0
+  },
+  "integration_tests": {
+    "details": {
+      "generator_executor": 1.0,
+      "executor_remediation": 1.0,
+      "remediation_cus": 0.8,
+      "end_to_end": 1.0
+    },
+    "score": 0.95
+  },
+  "false_negative_tests": {
+    "details": {
+      "detection_accuracy": 1.0,
+      "remediation_effectiveness": 1.0,
+      "response_speed": 0.8,
+      "coverage_completeness": 0.0
+    },
+    "score": 0.7
+  },
+  "performance_tests": {
+    "details": {
+      "startup_time": 0.95,
+      "memory_usage": 0.9,
+      "processing_speed": 0.9,
+      "scalability": 1.0
+    },
+    "score": 0.9375
+  },
+  "final_score": 0.896875
+}

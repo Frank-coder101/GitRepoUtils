@@ -1,1 +1,0 @@
-Trigger: Welcome to DeFi Huddle Trading System Setup Wizard!\nAction: wait_random\nTimestamp: 1751857462\n

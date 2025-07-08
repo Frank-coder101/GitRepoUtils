@@ -1,0 +1,44 @@
+{
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "description": "CUS shall correctly respond to ExtP configuration menu prompts",
+      "priority": "high",
+      "category": "functional",
+      "dependencies": [],
+      "test_cases": [],
+      "coverage_level": 0.0,
+      "risk_level": "high"
+    },
+    {
+      "id": "REQ-002",
+      "description": "CUS shall detect when ExtP shows 'already configured' message",
+      "priority": "high",
+      "category": "detection",
+      "dependencies": [],
+      "test_cases": [],
+      "coverage_level": 0.0,
+      "risk_level": "high"
+    },
+    {
+      "id": "REQ-003",
+      "description": "CUS shall differentiate between configuration success and configuration bypass",
+      "priority": "critical",
+      "category": "logic",
+      "dependencies": [],
+      "test_cases": [],
+      "coverage_level": 0.0,
+      "risk_level": "critical"
+    },
+    {
+      "id": "REQ-004",
+      "description": "CUS shall provide accurate feedback when ExtP configuration is incomplete",
+      "priority": "high",
+      "category": "feedback",
+      "dependencies": [],
+      "test_cases": [],
+      "coverage_level": 0.0,
+      "risk_level": "high"
+    }
+  ]
+}

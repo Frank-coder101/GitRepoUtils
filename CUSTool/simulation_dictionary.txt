@@ -47,5 +47,17 @@
   "Error:": "press_enter",
   "Warning:": "type_y",
   "Are you sure?": "type_y",
-  "Confirm?": "type_y"
+  "Confirm?": "type_y",
+  "Trading system is already configured": "force_configuration_interface",
+  "Configure trading system": "validate_configuration_request",
+  "system is already configured": "handle_already_configured",
+  "configuration has been completed": "verify_configuration_completion",
+  "setup is complete": "validate_setup_completion",
+  "VALIDATE_CONFIGURE_TRADING_SYSTEM": "validate_then_configure",
+  "CONTEXT_CONFIGURATION_MENU": "verify_configuration_menu_active",
+  "CONTEXT_USER_INPUT_REQUIRED": "ensure_user_input_received",
+  "CONTEXT_INTERFACE_STATE": "track_interface_state_changes",
+  "FALLBACK_CONFIGURATION": "alternative_configuration_approach",
+  "RETRY_WITH_VALIDATION": "retry_with_enhanced_validation",
+  "ESCALATE_TO_MANUAL": "escalate_to_manual_intervention"
 }

@@ -165,12 +165,8 @@ def extract_text_from_image(image):
 def focus_using_alt_tab():
     """Focus on the external program window using Alt+Tab"""
     try:
-        # Use Alt+Tab to switch to the next window - correct pynput syntax
-        keyboard.press(Key.alt)
-        keyboard.press(Key.tab)
-        time.sleep(0.1)  # Brief hold
-        keyboard.release(Key.tab)
-        keyboard.release(Key.alt)
+        # Use Alt+Tab to switch to the next window
+        keyboard.press_and_release('alt+tab')
         time.sleep(0.5)  # Brief pause for window switch
         return True
     except Exception as e:

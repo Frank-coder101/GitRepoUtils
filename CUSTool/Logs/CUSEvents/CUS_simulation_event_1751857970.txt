@@ -1,4 +1,0 @@
-Trigger: Select an option:
-Action: type_4
-Timestamp: 1751857970
-Detection Method: Screen Capture (Test Mode)
